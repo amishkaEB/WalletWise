@@ -9,19 +9,9 @@ public class ActionBtnTableDelete extends javax.swing.JPanel {
 
     }
 
-    public interface ActionListener {
+    
 
-
-        void onDelete(int row);
-    }
-
-    private ActionListener listener;
-    private int row;
-
-    public void setActionListener(ActionListener listener, int row) {
-        this.listener = listener;
-        this.row = row;
-    }
+   
 
 
     @SuppressWarnings("unchecked")
@@ -82,9 +72,7 @@ public class ActionBtnTableDelete extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
-        if (listener != null) {
-            listener.onDelete(row);
-        }
+        
     }//GEN-LAST:event_btnDeleteMouseClicked
 
 

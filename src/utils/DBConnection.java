@@ -10,9 +10,10 @@ public class DBConnection {
 
     private static DBConnection instance;
 
-    private DBConnection() {}
+    private DBConnection() {
+    }
 
-    public static DBConnection getInstance() {
+    public static synchronized DBConnection getInstance() {
         if (instance == null) {
             instance = new DBConnection();
         }
@@ -20,6 +21,6 @@ public class DBConnection {
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD); 
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

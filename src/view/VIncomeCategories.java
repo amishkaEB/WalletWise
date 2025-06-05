@@ -22,10 +22,10 @@ public class VIncomeCategories extends javax.swing.JPanel {
     private String categoryColor;
     private boolean isNew = true;
     private int editIndex;
+    MIncomeCategory model = new MIncomeCategory();
+    CIncomeCategory controller = new CIncomeCategory(model);
 
     private void tableLoad() {
-        MIncomeCategory model = new MIncomeCategory();
-        CIncomeCategory controller = new CIncomeCategory(model);
 
         DefaultTableModel tableModel = (DefaultTableModel) incomeCategoryTable1.getModel();
         tableModel.setRowCount(0);
@@ -34,24 +34,6 @@ public class VIncomeCategories extends javax.swing.JPanel {
             incomeCategoryTable1.addRow(row);
         }
         jScrollPane1.setViewportView(incomeCategoryTable1);
-
-        incomeCategoryTable1.getColumnModel().getColumn(3).setCellRenderer(new TableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                ActionBtnTableEdit panel = new ActionBtnTableEdit();
-                panel.setActionListener(new ActionBtnTableEdit.ActionListener() {
-                    @Override
-                    public void onEdit(int r) {
-                        System.out.println(r);
-                    }
-
-                    public void onDelete(int r) {
-                        controller.deleteCategory(r);
-                    }
-                }, row);
-                return panel;
-            }
-        });
 
         jScrollPane1.setBorder(null);
         jScrollPane1.getViewport().setBackground(new Color(51, 51, 51));
@@ -99,6 +81,15 @@ public class VIncomeCategories extends javax.swing.JPanel {
 
         jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(8, Integer.MAX_VALUE));
 
+    }
+
+    java.awt.Window parentWindow = SwingUtilities.getWindowAncestor(this);
+
+    public VIncomeCategories() {
+        initComponents();
+
+        tableLoad();
+
         incomeCategoryTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -116,6 +107,8 @@ public class VIncomeCategories extends javax.swing.JPanel {
                     editIndex = (int) id;
                     txtName.setText((String) incomeCategoryTable1.getValueAt(row, 1));
                 } else if (row >= 0 && col == 4) {
+                    evt.consume();
+
                     int id = (int) incomeCategoryTable1.getValueAt(row, 0);
                     int option = JOptionPane.showConfirmDialog(
                             VIncomeCategories.this,
@@ -126,19 +119,18 @@ public class VIncomeCategories extends javax.swing.JPanel {
                     );
                     if (option == JOptionPane.YES_OPTION) {
                         controller.deleteCategory(id);
+                        categoryColor = null;
+                        pickedColor.setBackground(Color.BLACK);
+                        txtName.setText("");
+                        isNew = true;
+                        editIndex = -1;
+                        txtHeading.setText("Add New Category");
+                        jLabel2.setText("Add New");
                         tableLoad();
                     }
                 }
             }
         });
-    }
-
-    java.awt.Window parentWindow = SwingUtilities.getWindowAncestor(this);
-
-    public VIncomeCategories() {
-        initComponents();
-
-        tableLoad();
 
     }
 
@@ -530,6 +522,8 @@ public class VIncomeCategories extends javax.swing.JPanel {
                 txtName.setText("");
                 tableLoad();
                 this.revalidate();
+                stmt.close();
+                conn.close();
                 this.repaint();
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
@@ -564,6 +558,8 @@ public class VIncomeCategories extends javax.swing.JPanel {
                 txtName.setText("");
                 isNew = true;
                 editIndex = -1;
+                stmt.close();
+                conn.close();
                 txtHeading.setText("Add New Category");
                 jLabel2.setText("Add New");
                 tableLoad();

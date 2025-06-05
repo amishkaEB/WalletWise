@@ -9,19 +9,9 @@ public class ActionBtnTableEdit extends javax.swing.JPanel {
 
     }
 
-    public interface ActionListener {
+    
 
-        void onEdit(int row);
-
-    }
-
-    private ActionListener listener;
-    private int row;
-
-    public void setActionListener(ActionListener listener, int row) {
-        this.listener = listener;
-        this.row = row;
-    }
+    
 
 
     @SuppressWarnings("unchecked")
@@ -83,9 +73,7 @@ public class ActionBtnTableEdit extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditMouseClicked
-        if (listener != null) {
-            listener.onEdit(row);
-        }
+        
     }//GEN-LAST:event_btnEditMouseClicked
 
 

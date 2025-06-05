@@ -100,9 +100,7 @@ public class IncomeCategoryTable extends JTable {
         
     }
 
-    public void addTableMouseListener(MouseListener listener) {
-        this.addMouseListener(listener);
-    }
+    
 
     public void addRow(Object[] row) {
         DefaultTableModel model = (DefaultTableModel) getModel();
