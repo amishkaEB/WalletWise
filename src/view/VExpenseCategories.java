@@ -1,8 +1,6 @@
 package view;
 
-import components.ActionBtnTableEdit;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -12,18 +10,17 @@ import utils.DBConnection;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import model.MIncomeCategory;
-import controller.CIncomeCategory;
+import model.MExpenseCategory;
+import controller.CExpenseCategory;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 
-public class VIncomeCategories extends javax.swing.JPanel {
+public class VExpenseCategories extends javax.swing.JPanel {
 
     private String categoryColor;
     private boolean isNew = true;
     private int editIndex;
-    MIncomeCategory model = new MIncomeCategory();
-    CIncomeCategory controller = new CIncomeCategory(model);
+    MExpenseCategory model = new MExpenseCategory();
+    CExpenseCategory controller = new CExpenseCategory(model);
 
     private void tableLoad() {
 
@@ -85,7 +82,7 @@ public class VIncomeCategories extends javax.swing.JPanel {
 
     java.awt.Window parentWindow = SwingUtilities.getWindowAncestor(this);
 
-    public VIncomeCategories() {
+    public VExpenseCategories() {
         initComponents();
 
         tableLoad();
@@ -110,8 +107,7 @@ public class VIncomeCategories extends javax.swing.JPanel {
                     evt.consume();
 
                     int id = (int) incomeCategoryTable1.getValueAt(row, 0);
-                    int option = JOptionPane.showConfirmDialog(
-                            VIncomeCategories.this,
+                    int option = JOptionPane.showConfirmDialog(VExpenseCategories.this,
                             "Are you sure you want to delete " + (String) incomeCategoryTable1.getValueAt(row, 1) + " category?",
                             "Delete Confirmation",
                             JOptionPane.YES_NO_OPTION,
@@ -354,7 +350,7 @@ public class VIncomeCategories extends javax.swing.JPanel {
         txtHeading1.setBackground(new java.awt.Color(51, 51, 51));
         txtHeading1.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
         txtHeading1.setForeground(new java.awt.Color(204, 204, 204));
-        txtHeading1.setText("Income Category List");
+        txtHeading1.setText("Expense Category List");
         txtHeading1.setBorder(null);
         txtHeading1.setOpaque(true);
         txtHeading1.addActionListener(new java.awt.event.ActionListener() {
@@ -502,7 +498,7 @@ public class VIncomeCategories extends javax.swing.JPanel {
 
             validateShow.setVisible(true);
         } else if (isNew == true) {
-            String sql = "INSERT INTO IncomeCategory (name, color) VALUES (?, ?)";
+            String sql = "INSERT INTO ExpenseCategory (name, color) VALUES (?, ?)";
             try (Connection conn = DBConnection.getInstance().getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                 stmt.setString(1, catName);
@@ -537,7 +533,7 @@ public class VIncomeCategories extends javax.swing.JPanel {
             }
 
         } else {
-            String sql = "UPDATE IncomeCategory SET name = ?, color = ? WHERE id = ?";
+            String sql = "UPDATE ExpenseCategory SET name = ?, color = ? WHERE id = ?";
             try (Connection conn = DBConnection.getInstance().getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                 stmt.setString(1, catName);

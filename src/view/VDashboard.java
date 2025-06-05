@@ -17,6 +17,7 @@ public class VDashboard extends javax.swing.JFrame {
                 switch (index) {
                     case 0 -> setForm(new VHome());
                     case 8 -> setForm(new VIncomeCategories());
+                    case 9 -> setForm(new VExpenseCategories());
                     default -> setForm(new BlankView());
                 }
                 
