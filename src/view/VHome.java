@@ -1,7 +1,14 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.UIManager;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import model.MCard;
 import utils.StatusType;
 
@@ -15,12 +22,54 @@ public class VHome extends javax.swing.JPanel {
         jScrollPane1.setBorder(null);
         jScrollPane1.getViewport().setBackground(new Color(51, 51, 51));
 
+        jScrollPane1.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            private  Color thumbColor = new Color(30, 30, 30); // black thumb
+            private  Color trackColor = new Color(60, 60, 60); // dark gray track
+
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(30, 30, 30);
+                this.trackColor = new Color(60, 60, 60);
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                g.setColor(thumbColor);
+                g.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                g.setColor(trackColor);
+                g.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+        });
+
+        jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(8, Integer.MAX_VALUE));
+
         latestTransactionsTable.addRow(new Object[]{"05 May", "Account 01", "Salary", "$2000", StatusType.INCOME});
         latestTransactionsTable.addRow(new Object[]{"06 May", "Account 02", "Grocery", "$120", StatusType.EXPENSE});
         latestTransactionsTable.addRow(new Object[]{"07 May", "Account 01", "Bonus", "$500", StatusType.INCOME});
         latestTransactionsTable.addRow(new Object[]{"08 May", "Account 03", "Electricity Bill", "$80", StatusType.EXPENSE});
         latestTransactionsTable.addRow(new Object[]{"09 May", "Account 02", "Interest", "$150", StatusType.TRANSFER});
-        latestTransactionsTable.addRow(new Object[]{"10 May", "Account 01", "Restaurant", "$60", StatusType.EXPENSE});
 
     }
 
@@ -106,8 +155,7 @@ public class VHome extends javax.swing.JPanel {
                 .addGap(20, 20, 20)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
-                .addGap(0, 0, 0))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -128,7 +176,7 @@ public class VHome extends javax.swing.JPanel {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(20, 20, 20))
+                .addGap(10, 10, 10))
         );
     }// </editor-fold>//GEN-END:initComponents
 

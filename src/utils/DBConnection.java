@@ -8,22 +8,18 @@ public class DBConnection {
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
-    private static final DBConnection instance = new DBConnection();
-    private Connection connection;
+    private static DBConnection instance;
 
-    private DBConnection() {
-        try {
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to connect to the database", e);
-        }
-    }
+    private DBConnection() {}
 
     public static DBConnection getInstance() {
+        if (instance == null) {
+            instance = new DBConnection();
+        }
         return instance;
     }
 
-    public Connection getConnection() {
-        return connection;
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD); 
     }
 }
