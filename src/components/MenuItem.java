@@ -15,7 +15,7 @@ public class MenuItem extends javax.swing.JPanel {
             lbName.setText(data.getName());
         } else if (data.getType() == MMenu.MenuType.TITLE) {
             lbIcon.setText(data.getName());
-            lbIcon.setFont(new Font("sansserif", 1, 12));
+            lbIcon.setFont(new Font("verdana", 1, 12));
             lbName.setVisible(false);
         } else {
             lbName.setText(" ");
