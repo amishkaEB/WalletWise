@@ -4,13 +4,15 @@ import components.MenuItem;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import javax.swing.*;
 import model.MMenu;
 
 public class ListMenu<E extends Object> extends JList<E> {
     
     private final DefaultListModel model;
-    private int selectedIndex = -1;
+    private int selectedIndex = 0;
+    private int overIndex =-1;
     
     public ListMenu() {
         model = new DefaultListModel();
@@ -35,6 +37,27 @@ public class ListMenu<E extends Object> extends JList<E> {
             
         });
         
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int index = locationToIndex(e.getPoint());
+                if(index != overIndex){
+                    Object o = model.getElementAt(index);
+                    if(o instanceof MMenu){
+                        MMenu menu = (MMenu) o;
+                        if(menu.getType()==MMenu.MenuType.MENU){
+                            overIndex = index;
+                        } else {
+                            overIndex = -1;
+                        }
+                        repaint();
+                    }
+                }
+            }
+            
+        });
+        
+        
     }
 
     @Override
@@ -51,6 +74,7 @@ public class ListMenu<E extends Object> extends JList<E> {
                 
                 MenuItem item = new MenuItem(data);
                 item.setSelected(selectedIndex == index);
+                item.setOver(overIndex == index);
                 return item;
             }
             
