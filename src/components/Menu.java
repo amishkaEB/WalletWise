@@ -5,12 +5,33 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import javax.swing.*;
+import model.MMenu;
 
 public class Menu extends javax.swing.JPanel {
 
     public Menu() {
         initComponents();
         setOpaque(false);
+        listMenu1.setOpaque(false);
+        init();
+    }
+    
+    private void init() {
+        listMenu1.addItem(new MMenu("1", "Dashboard", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("2", "UI Elements", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("3", "Comonents", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("4", "Forms Stuff", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("5", "Date Table", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("", " ", MMenu.MenuType.EMPTY));
+
+        listMenu1.addItem(new MMenu("", "My Data", MMenu.MenuType.TITLE));
+        listMenu1.addItem(new MMenu("", " ", MMenu.MenuType.EMPTY));
+        listMenu1.addItem(new MMenu("6", "Icons", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("7", "Sample Page", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("8", "Extra", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("9", "More", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("10", "Logout", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("", "", MMenu.MenuType.EMPTY));
     }
 
     @SuppressWarnings("unchecked")
@@ -19,6 +40,7 @@ public class Menu extends javax.swing.JPanel {
 
         panelMoving = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        listMenu1 = new utils.ListMenu<>();
 
         panelMoving.setOpaque(false);
 
@@ -35,13 +57,16 @@ public class Menu extends javax.swing.JPanel {
                 .addGap(15, 15, 15)
                 .addComponent(jLabel1)
                 .addContainerGap(47, Short.MAX_VALUE))
+            .addComponent(listMenu1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panelMovingLayout.setVerticalGroup(
             panelMovingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelMovingLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(jLabel1)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addGap(15, 15, 15)
+                .addComponent(listMenu1, javax.swing.GroupLayout.PREFERRED_SIZE, 551, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -54,7 +79,7 @@ public class Menu extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelMoving, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 544, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -96,6 +121,7 @@ public class Menu extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private utils.ListMenu<String> listMenu1;
     private javax.swing.JPanel panelMoving;
     // End of variables declaration//GEN-END:variables
 }
