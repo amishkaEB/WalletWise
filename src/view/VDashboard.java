@@ -1,17 +1,39 @@
-
 package view;
 
+import controller.EventMenuSelected;
 import java.awt.*;
+import javax.swing.JComponent;
 
 public class VDashboard extends javax.swing.JFrame {
 
-  
     public VDashboard() {
         initComponents();
-        setBackground(new Color(0,0,0,0));
+        setBackground(new Color(0, 0, 0, 0));
         menu2.initMoving(VDashboard.this);
+        setForm(new VHome());
+        menu2.addEventMenuSelected(new EventMenuSelected() {
+            @Override
+            public void selected(int index) {
+                switch (index) {
+                    case 0 -> setForm(new VHome());
+                    case 8 -> setForm(new VIncomeCategories());
+                    default -> setForm(new BlankView());
+                }
+                
+
+            }
+
+        });
+
     }
 
+    private void setForm(JComponent com) {
+        mainPanel.removeAll();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(com, BorderLayout.CENTER);
+        mainPanel.repaint();
+        mainPanel.revalidate();
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -19,12 +41,26 @@ public class VDashboard extends javax.swing.JFrame {
 
         panelBorder1 = new components.PanelBorder();
         menu2 = new components.Menu();
-        vHome1 = new view.VHome();
+        mainPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
 
         panelBorder1.setBackground(new java.awt.Color(0, 0, 0));
+
+        mainPanel.setBackground(new java.awt.Color(0, 0, 0));
+        mainPanel.setOpaque(false);
+
+        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+        mainPanelLayout.setHorizontalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 972, Short.MAX_VALUE)
+        );
+        mainPanelLayout.setVerticalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout panelBorder1Layout = new javax.swing.GroupLayout(panelBorder1);
         panelBorder1.setLayout(panelBorder1Layout);
@@ -32,8 +68,8 @@ public class VDashboard extends javax.swing.JFrame {
             panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelBorder1Layout.createSequentialGroup()
                 .addComponent(menu2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(vHome1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelBorder1Layout.setVerticalGroup(
@@ -43,7 +79,7 @@ public class VDashboard extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(panelBorder1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(vHome1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -63,7 +99,6 @@ public class VDashboard extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -99,8 +134,8 @@ public class VDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel mainPanel;
     private components.Menu menu2;
     private components.PanelBorder panelBorder1;
-    private view.VHome vHome1;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,6 +1,7 @@
 package utils;
 
 import components.MenuItem;
+import controller.EventMenuSelected;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,6 +14,12 @@ public class ListMenu<E extends Object> extends JList<E> {
     private final DefaultListModel model;
     private int selectedIndex = 0;
     private int overIndex =-1;
+    
+    private EventMenuSelected event;
+    
+    public void addEventMenuSelected (EventMenuSelected event){
+        this.event = event;
+    }
     
     public ListMenu() {
         model = new DefaultListModel();
@@ -27,13 +34,22 @@ public class ListMenu<E extends Object> extends JList<E> {
                         MMenu menu = (MMenu) o;
                         if(menu.getType() == MMenu.MenuType.MENU){
                             selectedIndex = index;
-                        } else {
-                            selectedIndex = index;
+                               if(event != null){
+                                   event.selected(index);
+                               }
                         }
                         repaint();
                     }
                 }
             }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                overIndex = -1;
+                repaint();
+            }
+            
+            
             
         });
         
@@ -45,7 +61,7 @@ public class ListMenu<E extends Object> extends JList<E> {
                     Object o = model.getElementAt(index);
                     if(o instanceof MMenu){
                         MMenu menu = (MMenu) o;
-                        if(menu.getType()==MMenu.MenuType.MENU){
+                        if(menu.getType()== MMenu.MenuType.MENU){
                             overIndex = index;
                         } else {
                             overIndex = -1;
@@ -54,6 +70,7 @@ public class ListMenu<E extends Object> extends JList<E> {
                     }
                 }
             }
+            
             
         });
         

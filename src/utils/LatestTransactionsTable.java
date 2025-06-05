@@ -21,7 +21,7 @@ public class LatestTransactionsTable extends JTable {
         getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                LatestTransactionsTableHeader header = new LatestTransactionsTableHeader(value + "");
+                TableHeader header = new TableHeader(value + "");
                 return header;
             }
         });

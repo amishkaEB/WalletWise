@@ -6,8 +6,16 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import javax.swing.*;
 import model.MMenu;
+import controller.EventMenuSelected;
 
 public class Menu extends javax.swing.JPanel {
+    
+    private EventMenuSelected event;
+    
+    public void addEventMenuSelected (EventMenuSelected event){
+        this.event = event;
+        listMenu1.addEventMenuSelected(event);
+    }
 
     public Menu() {
         initComponents();
@@ -24,9 +32,9 @@ public class Menu extends javax.swing.JPanel {
         listMenu1.addItem(new MMenu("5", "Date Table", MMenu.MenuType.MENU));
         listMenu1.addItem(new MMenu("", " ", MMenu.MenuType.EMPTY));
 
-        listMenu1.addItem(new MMenu("", "My Data", MMenu.MenuType.TITLE));
+        listMenu1.addItem(new MMenu("", "Manage Application", MMenu.MenuType.TITLE));
         listMenu1.addItem(new MMenu("", " ", MMenu.MenuType.EMPTY));
-        listMenu1.addItem(new MMenu("6", "Icons", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("6", "Income Categories", MMenu.MenuType.MENU));
         listMenu1.addItem(new MMenu("7", "Sample Page", MMenu.MenuType.MENU));
         listMenu1.addItem(new MMenu("8", "Extra", MMenu.MenuType.MENU));
         listMenu1.addItem(new MMenu("9", "More", MMenu.MenuType.MENU));

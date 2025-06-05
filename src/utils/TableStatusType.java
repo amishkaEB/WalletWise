@@ -20,7 +20,7 @@ public class TableStatusType extends JLabel {
 
     public void setType(StatusType type) {
         this.type = type;
-        if (type != null){
+        if (type != null) {
             setText(type.toString());
         } else {
             setText(" ");
@@ -33,17 +33,17 @@ public class TableStatusType extends JLabel {
         if (type != null) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            GradientPaint gn;
 
+            Color color;
             if (type == StatusType.INCOME) {
-                gn = new GradientPaint(0, 0, new Color(0, 200, 100), 0, getHeight(), new Color(0, 120, 60));
+                color = new Color(0, 180, 90);
             } else if (type == StatusType.EXPENSE) {
-                gn = new GradientPaint(0, 0, new Color(200, 50, 50), 0, getHeight(), new Color(120, 20, 20));
+                color = new Color(200, 50, 50); 
             } else {
-                gn = new GradientPaint(0, 0, new Color(70, 130, 255), 0, getHeight(), new Color(40, 90, 200));
+                color = new Color(70, 130, 255);
             }
 
-            g2.setPaint(gn);
+            g2.setColor(color);
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
 
             g2.dispose();

@@ -4,9 +4,9 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-public class LatestTransactionsTableHeader extends JLabel{
+public class TableHeader extends JLabel{
 
-    public LatestTransactionsTableHeader(String text) {
+    public TableHeader(String text) {
         super(text);
         setOpaque(true);
         setBackground(new Color(51,51,51));
