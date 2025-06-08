@@ -10,7 +10,10 @@ public class MSettings {
 
     public Object[] getSettings() {
         String query = "SELECT * FROM Settings LIMIT 1";
-        try (Connection con = DBConnection.getInstance().getConnection(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+        try {
+            Connection con = DBConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
                 return new Object[]{
@@ -21,27 +24,28 @@ public class MSettings {
                 };
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
         return null;
     }
-    
+
     public void updateSettings(String symbol, boolean symbolFirst, boolean separator, String startScreen) {
-    String query = "UPDATE Settings SET Symbol = ?, SymbolFirst = ?, Seperator = ?, StartScreen = ?";
-    try (Connection con = DBConnection.getInstance().getConnection();
-         PreparedStatement ps = con.prepareStatement(query)) {
+        String query = "UPDATE Settings SET Symbol = ?, SymbolFirst = ?, Seperator = ?, StartScreen = ?";
+        try {
+            Connection con = DBConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement(query);
 
-        ps.setString(1, symbol);
-        ps.setBoolean(2, symbolFirst);
-        ps.setBoolean(3, separator);
-        ps.setString(4, startScreen);
+            ps.setString(1, symbol);
+            ps.setBoolean(2, symbolFirst);
+            ps.setBoolean(3, separator);
+            ps.setString(4, startScreen);
 
-        ps.executeUpdate();
+            ps.executeUpdate();
 
-    } catch (SQLException e) {
-        System.err.println("Error updating settings: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error updating settings: " + e.getMessage());
+        }
     }
-}
 
 };

@@ -6,13 +6,12 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.swing.JColorChooser;
 import javax.swing.SwingUtilities;
-import utils.DBConnection;
-import java.sql.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import model.MExpenseCategory;
 import controller.CExpenseCategory;
 import javax.swing.table.DefaultTableModel;
+import utils.Validations;
 
 public class VExpenseCategories extends javax.swing.JPanel {
 
@@ -30,6 +29,7 @@ public class VExpenseCategories extends javax.swing.JPanel {
         for (Object[] row : controller.getAllCategories()) {
             incomeCategoryTable1.addRow(row);
         }
+
         jScrollPane1.setViewportView(incomeCategoryTable1);
 
         jScrollPane1.setBorder(null);
@@ -114,15 +114,25 @@ public class VExpenseCategories extends javax.swing.JPanel {
                             JOptionPane.WARNING_MESSAGE
                     );
                     if (option == JOptionPane.YES_OPTION) {
-                        controller.deleteCategory(id);
-                        categoryColor = null;
-                        pickedColor.setBackground(Color.BLACK);
-                        txtName.setText("");
-                        isNew = true;
-                        editIndex = -1;
-                        txtHeading.setText("Add New Category");
-                        jLabel2.setText("Add New");
-                        tableLoad();
+                        boolean deleted = controller.deleteCategory(id);
+                        if (deleted) {
+                            categoryColor = null;
+                            pickedColor.setBackground(Color.BLACK);
+                            txtName.setText("");
+                            isNew = true;
+                            editIndex = -1;
+                            txtHeading.setText("Add New Category");
+                            jLabel2.setText("Add New");
+                            tableLoad();
+                        } else {
+                            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                                    "Error Occured",
+                                    "Delete Query Failed. Please try again.",
+                                    "Back",
+                                    Color.RED);
+
+                            validateShow.setVisible(true);
+                        }
                     }
                 }
             }
@@ -455,6 +465,8 @@ public class VExpenseCategories extends javax.swing.JPanel {
 
 
     private void btnColorPickerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnColorPickerMouseClicked
+        
+        
         Color selectedColor = JColorChooser.showDialog(null, "Pick a Color", Color.RED);
         if (selectedColor != null) {
             String hex = String.format("#%02x%02x%02x",
@@ -489,7 +501,7 @@ public class VExpenseCategories extends javax.swing.JPanel {
 
             validateShow.setVisible(true);
 
-        } else if (catName.matches(".*[^a-zA-Z0-9 ].*")) {
+        } else if (!Validations.isLettersOnly(catName)) {
             MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                     "Category Name field Validation",
                     "<html>Please enter a valid name for category<br>(Can't have special characters)</html>",
@@ -498,17 +510,11 @@ public class VExpenseCategories extends javax.swing.JPanel {
 
             validateShow.setVisible(true);
         } else if (isNew == true) {
-            String sql = "INSERT INTO ExpenseCategory (name, color) VALUES (?, ?)";
-            try (Connection conn = DBConnection.getInstance().getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-                stmt.setString(1, catName);
-                stmt.setString(2, categoryColor);
-
-                int affectedRows = stmt.executeUpdate();
-
+            boolean inserted = controller.insertCategory(catName, categoryColor);
+            if (inserted) {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Succesfully Created",
-                        affectedRows + " Rows affected.",
+                        "Category Created.",
                         "Back",
                         Color.GREEN);
 
@@ -518,11 +524,8 @@ public class VExpenseCategories extends javax.swing.JPanel {
                 txtName.setText("");
                 tableLoad();
                 this.revalidate();
-                stmt.close();
-                conn.close();
                 this.repaint();
-            } catch (SQLException e) {
-                System.err.println(e.getMessage());
+            } else {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Error Occured",
                         "Insert Query Failed. Please try again.",
@@ -531,20 +534,12 @@ public class VExpenseCategories extends javax.swing.JPanel {
 
                 validateShow.setVisible(true);
             }
-
         } else {
-            String sql = "UPDATE ExpenseCategory SET name = ?, color = ? WHERE id = ?";
-            try (Connection conn = DBConnection.getInstance().getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-                stmt.setString(1, catName);
-                stmt.setString(2, categoryColor);
-                stmt.setInt(3, editIndex);
-
-                int affectedRows = stmt.executeUpdate();
-
+            boolean updated = controller.updateCategory(catName, categoryColor, editIndex);
+            if (updated) {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Succesfully Updated",
-                        affectedRows + " Rows affected.",
+                        "Updated Succesfully.",
                         "Back",
                         Color.GREEN);
 
@@ -554,15 +549,12 @@ public class VExpenseCategories extends javax.swing.JPanel {
                 txtName.setText("");
                 isNew = true;
                 editIndex = -1;
-                stmt.close();
-                conn.close();
                 txtHeading.setText("Add New Category");
                 jLabel2.setText("Add New");
                 tableLoad();
                 this.revalidate();
                 this.repaint();
-            } catch (SQLException e) {
-                System.err.println(e.getMessage());
+            } else {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Error Occured",
                         "Insert Query Failed. Please try again.",

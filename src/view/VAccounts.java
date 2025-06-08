@@ -13,6 +13,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 import model.MAccounts;
 import controller.CAccounts;
 import javax.swing.table.DefaultTableModel;
+import utils.Validations;
 
 public class VAccounts extends javax.swing.JPanel {
 
@@ -114,15 +115,25 @@ public class VAccounts extends javax.swing.JPanel {
                             JOptionPane.WARNING_MESSAGE
                     );
                     if (option == JOptionPane.YES_OPTION) {
-                        controller.deleteCategory(id);
-                        categoryColor = null;
-                        pickedColor.setBackground(Color.BLACK);
-                        txtName.setText("");
-                        isNew = true;
-                        editIndex = -1;
-                        txtHeading.setText("Add New Account");
-                        jLabel2.setText("Add New");
-                        tableLoad();
+                        boolean deleted = controller.deleteCategory(id);
+                        if (deleted) {
+                            categoryColor = null;
+                            pickedColor.setBackground(Color.BLACK);
+                            txtName.setText("");
+                            isNew = true;
+                            editIndex = -1;
+                            txtHeading.setText("Add New Account");
+                            jLabel2.setText("Add New");
+                            tableLoad();
+                        } else {
+                            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                                    "Error Occured",
+                                    "Delete Query Failed. Please try again.",
+                                    "Back",
+                                    Color.RED);
+
+                            validateShow.setVisible(true);
+                        }
                     }
                 }
             }
@@ -489,7 +500,7 @@ public class VAccounts extends javax.swing.JPanel {
 
             validateShow.setVisible(true);
 
-        } else if (catName.matches(".*[^a-zA-Z0-9 ].*")) {
+        } else if (!Validations.isLettersOnly(catName)) {
             MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                     "Account Name field Validation",
                     "<html>Please enter a valid name for account<br>(Can't have special characters)</html>",
@@ -498,17 +509,11 @@ public class VAccounts extends javax.swing.JPanel {
 
             validateShow.setVisible(true);
         } else if (isNew == true) {
-            String sql = "INSERT INTO Accounts (name, color) VALUES (?, ?)";
-            try (Connection conn = DBConnection.getInstance().getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-                stmt.setString(1, catName);
-                stmt.setString(2, categoryColor);
-
-                int affectedRows = stmt.executeUpdate();
-
+            boolean inserted = controller.insertCategory(catName, categoryColor);
+            if (inserted) {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Succesfully Created",
-                        affectedRows + " Rows affected.",
+                        "Account Created.",
                         "Back",
                         Color.GREEN);
 
@@ -518,11 +523,8 @@ public class VAccounts extends javax.swing.JPanel {
                 txtName.setText("");
                 tableLoad();
                 this.revalidate();
-                stmt.close();
-                conn.close();
                 this.repaint();
-            } catch (SQLException e) {
-                System.err.println(e.getMessage());
+            } else {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Error Occured",
                         "Insert Query Failed. Please try again.",
@@ -531,20 +533,12 @@ public class VAccounts extends javax.swing.JPanel {
 
                 validateShow.setVisible(true);
             }
-
         } else {
-            String sql = "UPDATE Accounts SET name = ?, color = ? WHERE id = ?";
-            try (Connection conn = DBConnection.getInstance().getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-                stmt.setString(1, catName);
-                stmt.setString(2, categoryColor);
-                stmt.setInt(3, editIndex);
-
-                int affectedRows = stmt.executeUpdate();
-
+            boolean updated = controller.updateCategory(catName, categoryColor, editIndex);
+            if (updated) {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Succesfully Updated",
-                        affectedRows + " Rows affected.",
+                        "Updated Succesfully.",
                         "Back",
                         Color.GREEN);
 
@@ -554,15 +548,12 @@ public class VAccounts extends javax.swing.JPanel {
                 txtName.setText("");
                 isNew = true;
                 editIndex = -1;
-                stmt.close();
-                conn.close();
                 txtHeading.setText("Add New Account");
                 jLabel2.setText("Add New");
                 tableLoad();
                 this.revalidate();
                 this.repaint();
-            } catch (SQLException e) {
-                System.err.println(e.getMessage());
+            } else {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Error Occured",
                         "Insert Query Failed. Please try again.",

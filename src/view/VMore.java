@@ -1,19 +1,31 @@
 package view;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
 import controller.CSettings;
 import java.awt.Color;
+import java.awt.Font;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import model.MSettings;
 
 public class VMore extends javax.swing.JPanel {
-    
+
     MSettings model = new MSettings();
     CSettings controller = new CSettings(model);
 
     public VMore() {
         initComponents();
-
         
+        comboStart.setForeground(Color.WHITE);
+        comboStart.setBackground(new Color(40, 40, 40));
+        comboStart.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
         Object[] settings = (Object[]) controller.getSettings();
 
         if (settings != null) {
@@ -22,7 +34,6 @@ public class VMore extends javax.swing.JPanel {
             boolean separator = (boolean) settings[2];
             String startScreen = (String) settings[3];
 
-            
             txtCurrencyName.setText(symbol);
             checkSymbolFirst.setSelected(symbolFirst);
             checkThousandSeperator.setSelected(separator);
@@ -273,30 +284,30 @@ public class VMore extends javax.swing.JPanel {
     }//GEN-LAST:event_namelbl2ActionPerformed
 
     java.awt.Window parentWindow = SwingUtilities.getWindowAncestor(this);
-    
+
     private void btnSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseClicked
         String symbol = txtCurrencyName.getText();
         Boolean symbolFirst = checkSymbolFirst.isSelected();
         Boolean ThousandSep = checkThousandSeperator.isSelected();
         String startScreen = (String) comboStart.getSelectedItem();
-        
-        try{
+
+        try {
             controller.updateSettings(symbol, symbolFirst, ThousandSep, startScreen);
             MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                     "Settings Saved",
                     "<html>Succesfully Saved</html>",
                     "Back",
                     Color.GREEN);
-            
+
             validateShow.setVisible(true);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                     "Error Occured",
                     "<html>Unexpected error occured. Please try again.</html>",
                     "Back",
                     Color.RED);
-            
+
             validateShow.setVisible(true);
         }
     }//GEN-LAST:event_btnSaveMouseClicked

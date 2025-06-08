@@ -14,7 +14,15 @@ public class CExpenseCategory {
         return model.getAllCategories();
     }
 
-    public void deleteCategory(int id) {
-        model.deleteCategory(id);
+    public boolean deleteCategory(int id) {
+        return model.deleteCategory(id);
+    }
+    
+    public boolean insertCategory(String catName, String categoryColor) {
+        return model.insertCategory(catName, categoryColor);
+    }
+    
+    public boolean updateCategory(String catName, String categoryColor, int editIndex) {
+        return model.updateCategory(catName, categoryColor, editIndex);
     }
 }
