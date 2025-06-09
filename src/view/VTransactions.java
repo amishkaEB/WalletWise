@@ -2,17 +2,17 @@ package view;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextField;
@@ -29,8 +29,8 @@ public class VTransactions extends javax.swing.JPanel {
         jScrollPane1.getViewport().setBackground(new Color(51, 51, 51));
 
         jScrollPane1.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            private Color thumbColor = new Color(30, 30, 30); // black thumb
-            private Color trackColor = new Color(60, 60, 60); // dark gray track
+            private Color thumbColor = new Color(30, 30, 30);
+            private Color trackColor = new Color(60, 60, 60);
 
             @Override
             protected void configureScrollBarColors() {
@@ -289,23 +289,29 @@ public class VTransactions extends javax.swing.JPanel {
     private void btnAddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAddMouseClicked
         Window window = SwingUtilities.getWindowAncestor(this);
         if (window instanceof Frame frame) {
-            VAddNewTransaction dialog = new VAddNewTransaction(frame, true);
-            dialog.setLocationRelativeTo(this);
+            VAddNewTransaction dialog;
+            try {
+                dialog = new VAddNewTransaction(frame, true);
+                dialog.setLocationRelativeTo(this);
 
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosed(java.awt.event.WindowEvent e) {
-                    panelBorder2.setVisible(true);
-                }
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosed(java.awt.event.WindowEvent e) {
+                        panelBorder2.setVisible(true);
+                    }
 
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    panelBorder2.setVisible(true);
-                }
-            });
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        panelBorder2.setVisible(true);
+                    }
+                });
 
-            panelBorder2.setVisible(false);
-            dialog.setVisible(true);
+                panelBorder2.setVisible(false);
+                dialog.setVisible(true);
+            } catch (Exception ex) {
+                System.err.println(ex.getMessage());
+            }
+
         }
 
     }//GEN-LAST:event_btnAddMouseClicked

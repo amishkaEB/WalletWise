@@ -7,10 +7,9 @@ import utils.DBConnection;
 
 public class MIncomeCategory {
 
-    public List<Object[]> getAllCategories() {
+    public List<Object[]> getAllCategories() throws Exception {
         List<Object[]> list = new ArrayList<>();
         String query = "SELECT * FROM IncomeCategory";
-        try {
             Connection con = DBConnection.getConnection();
             PreparedStatement ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
@@ -23,54 +22,33 @@ public class MIncomeCategory {
                 };
                 list.add(row);
             }
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
         return list;
     }
 
-    public boolean deleteCategory(int id) {
+    public void deleteCategory(int id) throws Exception {
         String query = "DELETE FROM IncomeCategory WHERE id = ?";
-        try {
             Connection con = DBConnection.getConnection();
             PreparedStatement ps = con.prepareStatement(query);
             ps.setInt(1, id);
             ps.executeUpdate();
-            return true;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            return false;
-        }
     }
     
-    public boolean insertCategory(String catName, String categoryColor) {
+    public void insertCategory(String catName, String categoryColor) throws Exception {
         String sql = "INSERT INTO IncomeCategory (name, color) VALUES (?, ?)";
-        try {
             Connection con = DBConnection.getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, catName);
             stmt.setString(2, categoryColor);
             stmt.executeUpdate();
-            return true;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            return false;
-        }
     }
 
-    public boolean updateCategory(String catName, String categoryColor, int editIndex) {
+    public void updateCategory(String catName, String categoryColor, int editIndex) throws Exception {
         String sql = "UPDATE IncomeCategory SET name = ?, color = ? WHERE id = ?";
-        try {
             Connection con = DBConnection.getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setString(1, catName);
             stmt.setString(2, categoryColor);
             stmt.setInt(3, editIndex);
             stmt.executeUpdate();
-            return true;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            return false;
-        }
     }
 }

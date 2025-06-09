@@ -1,7 +1,9 @@
 package view;
 
+import controller.CAddTransactions;
 import java.awt.Color;
 import java.awt.Component;
+import java.util.*;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
@@ -10,10 +12,19 @@ import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
+import model.MAddTransaction;
 
 public class VAddNewTransaction extends javax.swing.JDialog {
 
-    public VAddNewTransaction(java.awt.Frame parent, boolean modal) {
+    List<Map<String, Object>> expenseCategories = new ArrayList<>();
+    List<Map<String, Object>> incomeCategories = new ArrayList<>();
+    List<Map<String, Object>> accounts = new ArrayList<>();
+
+    public VAddNewTransaction(java.awt.Frame parent, boolean modal) throws Exception {
         super(parent, modal);
         setUndecorated(true);
         setBackground(new Color(0, 0, 0, 0));
@@ -23,18 +34,46 @@ public class VAddNewTransaction extends javax.swing.JDialog {
         styleDarkComboBox(comboFrom);
         styleDarkComboBox(comboTo);
 
+        UIManager.put("JCalendar.background", new Color(20, 20, 20));
+        UIManager.put("JCalendar.foreground", Color.WHITE);
+        UIManager.put("JCalendar.selectionBackground", new Color(70, 70, 70));
+        UIManager.put("JCalendar.selectionForeground", Color.WHITE);
+
+        inputDate = new com.toedter.calendar.JDateChooser();
+        inputDate.setDateFormatString("dd-MM-yyyy");
+
         JTextField editor = (JTextField) inputDate.getDateEditor().getUiComponent();
         editor.setBackground(new Color(20, 20, 20));
         editor.setForeground(Color.WHITE);
         editor.setCaretColor(Color.WHITE);
         editor.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        UIManager.put("JCalendar.background", new Color(20, 20, 20));
-        UIManager.put("JCalendar.foreground", Color.WHITE);
-        UIManager.put("JCalendar.selectionBackground", new Color(70, 70, 70));
-        UIManager.put("JCalendar.selectionForeground", Color.WHITE);
-
         SwingUtilities.updateComponentTreeUI(inputDate);
+
+        MAddTransaction model = new MAddTransaction();
+        CAddTransactions controller = new CAddTransactions(model);
+
+        Map<String, List<Map<String, Object>>> categories = controller.getAllCategories();
+
+        if (categories != null) {
+            expenseCategories = categories.getOrDefault("ExpenseCategories", new ArrayList<>());
+            incomeCategories = categories.getOrDefault("IncomeCategories", new ArrayList<>());
+            accounts = categories.getOrDefault("Accounts", new ArrayList<>());
+        }
+
+        comboFrom.removeAllItems();
+        comboTo.removeAllItems();
+
+        for (Map<String, Object> row : accounts) {
+            comboFrom.addItem(row.get("name").toString());
+        }
+
+        for (Map<String, Object> row : expenseCategories) {
+            comboTo.addItem(row.get("name").toString());
+        }
+
+        PlainDocument doc = (PlainDocument) inputAmount.getDocument();
+        doc.setDocumentFilter(new PositiveNumberFilter());
 
     }
 
@@ -71,6 +110,11 @@ public class VAddNewTransaction extends javax.swing.JDialog {
 
         comboType.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         comboType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Expense", "Income", "Transfer" }));
+        comboType.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboTypeActionPerformed(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
 
@@ -79,7 +123,7 @@ public class VAddNewTransaction extends javax.swing.JDialog {
         jLabel3.setText("Date :");
 
         inputDate.setForeground(new java.awt.Color(255, 255, 255));
-        inputDate.setDateFormatString("dd/mm/yyyy");
+        inputDate.setDateFormatString("dd-MM-yyyy");
         inputDate.setMinSelectableDate(new java.util.Date(-62135785732000L));
 
         jLabel4.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
@@ -311,6 +355,63 @@ public class VAddNewTransaction extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnBackMouseClicked
 
+    public class PositiveNumberFilter extends DocumentFilter {
+
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+            StringBuilder sb = new StringBuilder(fb.getDocument().getText(0, fb.getDocument().getLength()));
+            sb.insert(offset, string);
+            if (isValidInput(sb.toString())) {
+                super.insertString(fb, offset, string, attr);
+            }
+        }
+
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attr) throws BadLocationException {
+            StringBuilder sb = new StringBuilder(fb.getDocument().getText(0, fb.getDocument().getLength()));
+            sb.replace(offset, offset + length, string);
+            if (isValidInput(sb.toString())) {
+                super.replace(fb, offset, length, string, attr);
+            }
+        }
+
+        private boolean isValidInput(String text) {
+            return text.matches("\\d*\\.?\\d*") && !text.equals(".");
+        }
+    }
+
+
+    private void comboTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboTypeActionPerformed
+        comboFrom.removeAllItems();
+        comboTo.removeAllItems();
+
+        if (comboType.getSelectedItem() == "Expense") {
+            for (Map<String, Object> row : accounts) {
+                comboFrom.addItem(row.get("name").toString());
+            }
+
+            for (Map<String, Object> row : expenseCategories) {
+                comboTo.addItem(row.get("name").toString());
+            }
+        } else if (comboType.getSelectedItem() == "Income") {
+            for (Map<String, Object> row : incomeCategories) {
+                comboFrom.addItem(row.get("name").toString());
+            }
+
+            for (Map<String, Object> row : accounts) {
+                comboTo.addItem(row.get("name").toString());
+            }
+        } else if (comboType.getSelectedItem() == "Transfer") {
+            for (Map<String, Object> row : accounts) {
+                comboFrom.addItem(row.get("name").toString());
+            }
+
+            for (Map<String, Object> row : accounts) {
+                comboTo.addItem(row.get("name").toString());
+            }
+        }
+    }//GEN-LAST:event_comboTypeActionPerformed
+
     private void styleDarkComboBox(JComboBox<?> comboBox) {
         comboBox.setForeground(Color.WHITE);
         comboBox.setBackground(new Color(0, 0, 0));
@@ -350,14 +451,20 @@ public class VAddNewTransaction extends javax.swing.JDialog {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                VAddNewTransaction dialog = new VAddNewTransaction(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+                VAddNewTransaction dialog;
+                try {
+                    dialog = new VAddNewTransaction(new javax.swing.JFrame(), true);
+                    dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                        @Override
+                        public void windowClosing(java.awt.event.WindowEvent e) {
+                            System.exit(0);
+                        }
+                    });
+                    dialog.setVisible(true);
+                } catch (Exception ex) {
+                    System.err.println(ex.getMessage());
+                }
+
             }
         });
     }

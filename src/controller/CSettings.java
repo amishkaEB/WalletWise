@@ -9,12 +9,12 @@ public class CSettings {
         this.model = model;
     }
 
-    public Object[] getSettings() {
+    public Object[] getSettings() throws Exception{
         return model.getSettings();
         
     }
 
-    public void updateSettings(String symbol, boolean symbolFirst, boolean separator, String startScreen) {
+    public void updateSettings(String symbol, boolean symbolFirst, boolean separator, String startScreen) throws Exception {
         model.updateSettings(symbol, symbolFirst, separator, startScreen);
     }
 }

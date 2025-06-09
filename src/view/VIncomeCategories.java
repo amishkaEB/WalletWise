@@ -1,23 +1,17 @@
 package view;
 
 import components.MessageBox;
-import components.ActionBtnTableEdit;
 import components.ColorDialog;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import javax.swing.JColorChooser;
 import javax.swing.SwingUtilities;
-import utils.DBConnection;
-import java.sql.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import model.MIncomeCategory;
 import controller.CIncomeCategory;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import utils.Validations;
 
 public class VIncomeCategories extends javax.swing.JPanel {
@@ -33,9 +27,20 @@ public class VIncomeCategories extends javax.swing.JPanel {
         DefaultTableModel tableModel = (DefaultTableModel) incomeCategoryTable1.getModel();
         tableModel.setRowCount(0);
 
-        for (Object[] row : controller.getAllCategories()) {
-            incomeCategoryTable1.addRow(row);
+        try {
+            for (Object[] row : controller.getAllCategories()) {
+                incomeCategoryTable1.addRow(row);
+            }
+        } catch (Exception ex) {
+            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                    "Error Occured",
+                    "Database Fatch Failed. Please try again.",
+                    "Back",
+                    Color.RED);
+
+            validateShow.setVisible(true);
         }
+
         jScrollPane1.setViewportView(incomeCategoryTable1);
 
         jScrollPane1.setBorder(null);
@@ -121,8 +126,9 @@ public class VIncomeCategories extends javax.swing.JPanel {
                             JOptionPane.WARNING_MESSAGE
                     );
                     if (option == JOptionPane.YES_OPTION) {
-                        boolean deleted = controller.deleteCategory(id);
-                        if (deleted) {
+                        try {
+                            controller.deleteCategory(id);
+
                             categoryColor = null;
                             pickedColor.setBackground(Color.BLACK);
                             txtName.setText("");
@@ -131,7 +137,7 @@ public class VIncomeCategories extends javax.swing.JPanel {
                             txtHeading.setText("Add New Category");
                             jLabel2.setText("Add New");
                             tableLoad();
-                        } else {
+                        } catch (Exception e) {
                             MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                                     "Error Occured",
                                     "Delete Query Failed. Please try again.",
@@ -515,8 +521,9 @@ public class VIncomeCategories extends javax.swing.JPanel {
 
             validateShow.setVisible(true);
         } else if (isNew == true) {
-            boolean inserted = controller.insertCategory(catName, categoryColor);
-            if (inserted) {
+            try{
+                controller.insertCategory(catName, categoryColor);
+            
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Succesfully Created",
                         "Category Created.",
@@ -530,7 +537,7 @@ public class VIncomeCategories extends javax.swing.JPanel {
                 tableLoad();
                 this.revalidate();
                 this.repaint();
-            } else {
+            } catch(Exception e) {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Error Occured",
                         "Insert Query Failed. Please try again.",
@@ -540,8 +547,9 @@ public class VIncomeCategories extends javax.swing.JPanel {
                 validateShow.setVisible(true);
             }
         } else {
-            boolean updated = controller.updateCategory(catName, categoryColor, editIndex);
-            if (updated) {
+            try{
+                controller.updateCategory(catName, categoryColor, editIndex);
+            
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Succesfully Updated",
                         "Updated Succesfully.",
@@ -559,7 +567,7 @@ public class VIncomeCategories extends javax.swing.JPanel {
                 tableLoad();
                 this.revalidate();
                 this.repaint();
-            } else {
+            } catch(Exception e) {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Error Occured",
                         "Insert Query Failed. Please try again.",

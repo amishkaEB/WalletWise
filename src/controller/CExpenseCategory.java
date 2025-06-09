@@ -10,19 +10,19 @@ public class CExpenseCategory {
         this.model = model;
     }
 
-    public List<Object[]> getAllCategories() {
+    public List<Object[]> getAllCategories() throws Exception {
         return model.getAllCategories();
     }
 
-    public boolean deleteCategory(int id) {
-        return model.deleteCategory(id);
+    public void deleteCategory(int id) throws Exception {
+         model.deleteCategory(id);
     }
     
-    public boolean insertCategory(String catName, String categoryColor) {
-        return model.insertCategory(catName, categoryColor);
+    public void insertCategory(String catName, String categoryColor) throws Exception {
+         model.insertCategory(catName, categoryColor);
     }
     
-    public boolean updateCategory(String catName, String categoryColor, int editIndex) {
-        return model.updateCategory(catName, categoryColor, editIndex);
+    public void updateCategory(String catName, String categoryColor, int editIndex) throws Exception {
+         model.updateCategory(catName, categoryColor, editIndex);
     }
 }

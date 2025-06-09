@@ -1,11 +1,9 @@
 package view;
 
-
 import components.MessageBox;
 import controller.CSettings;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -14,8 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import model.MSettings;
 
 public class VMore extends javax.swing.JPanel {
@@ -25,7 +21,7 @@ public class VMore extends javax.swing.JPanel {
 
     public VMore() {
         initComponents();
-        
+
         comboStart.setForeground(Color.WHITE);
         comboStart.setBackground(new Color(0, 0, 0));
         comboStart.setFocusable(false);
@@ -58,9 +54,9 @@ public class VMore extends javax.swing.JPanel {
             }
         }
 
-        Object[] settings = (Object[]) controller.getSettings();
-
-        if (settings != null) {
+        Object[] settings;
+        try {
+            settings = (Object[]) controller.getSettings();
             String symbol = (String) settings[0];
             boolean symbolFirst = (boolean) settings[1];
             boolean separator = (boolean) settings[2];
@@ -70,7 +66,16 @@ public class VMore extends javax.swing.JPanel {
             checkSymbolFirst.setSelected(symbolFirst);
             checkThousandSeperator.setSelected(separator);
             comboStart.setSelectedItem(startScreen);
+        } catch (Exception ex) {
+            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                    "Error Occured",
+                    "Database Fatch Failed. Please try again.",
+                    "Back",
+                    Color.RED);
+
+            validateShow.setVisible(true);
         }
+
     }
 
     @SuppressWarnings("unchecked")
