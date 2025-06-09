@@ -1,14 +1,18 @@
 package view;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
+
+import components.MessageBox;
 import controller.CSettings;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -23,8 +27,36 @@ public class VMore extends javax.swing.JPanel {
         initComponents();
         
         comboStart.setForeground(Color.WHITE);
-        comboStart.setBackground(new Color(40, 40, 40));
-        comboStart.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        comboStart.setBackground(new Color(0, 0, 0));
+        comboStart.setFocusable(false);
+        comboStart.setOpaque(true);
+
+        comboStart.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                label.setOpaque(true);
+                label.setForeground(Color.WHITE);
+                label.setBackground(isSelected ? new Color(70, 70, 70) : new Color(20, 20, 20));
+                label.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+                if (list != null) {
+                    list.setBorder(BorderFactory.createEmptyBorder());
+                    list.setBackground(new Color(20, 20, 20));
+                }
+                return label;
+            }
+        });
+        if (comboStart.isEditable()) {
+            Component editor = comboStart.getEditor().getEditorComponent();
+            if (editor instanceof JTextField tf) {
+                tf.setBackground(new Color(20, 20, 20));
+                tf.setForeground(Color.WHITE);
+                tf.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            }
+        }
 
         Object[] settings = (Object[]) controller.getSettings();
 

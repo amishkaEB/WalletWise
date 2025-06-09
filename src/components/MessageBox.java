@@ -1,11 +1,11 @@
-package view;
+package components;
 
 import java.awt.Color;
 
 public class MessageBox extends javax.swing.JDialog {
 
     public MessageBox(java.awt.Frame parent, String head, String text, String msgOk, Color color) {
-        super(parent, true); // true = modal
+        super(parent, true);
         initComponents();
         setBackground(new Color(0, 0, 0, 0));
 
