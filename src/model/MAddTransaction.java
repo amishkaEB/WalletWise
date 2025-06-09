@@ -4,11 +4,12 @@ import java.sql.*;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import utils.Crypto;
 import utils.DBConnection;
 
 public class MAddTransaction {
 
-    private List<Map<String, Object>> fetchTable(String tableName){
+    private List<Map<String, Object>> fetchTable(String tableName) {
         List<Map<String, Object>> rows = new ArrayList<>();
         String query = "SELECT * FROM " + tableName;
 
@@ -61,6 +62,35 @@ public class MAddTransaction {
         return result;
     }
 
+    public void insertTransaction(String type, int from, int to, String amount, String date) throws Exception {
+        String sql = "INSERT INTO Transactions (type, `from`, `to`, amount, date) VALUES (?, ?, ?, ?, ?)";
+        Connection con = DBConnection.getConnection();
+        PreparedStatement stmt = con.prepareStatement(sql);
+
+        String encryptedAmount = Crypto.encrypt(amount);
+
+        stmt.setString(1, type);
+        stmt.setInt(2, from);
+        stmt.setInt(3, to);
+        stmt.setString(4, encryptedAmount);
+        stmt.setDate(5, java.sql.Date.valueOf(date));
+        stmt.executeUpdate();
+    }
     
-    
+    public void updateTransaction(int id, String type, int from, int to, String amount, String date) throws Exception {
+        String sql = "UPDATE Transactions SET type = ?, `from` = ?, `to` = ?, amount = ?, date =? WHERE id = ?";
+        Connection con = DBConnection.getConnection();
+        PreparedStatement stmt = con.prepareStatement(sql);
+
+        String encryptedAmount = Crypto.encrypt(amount);
+
+        stmt.setString(1, type);
+        stmt.setInt(2, from);
+        stmt.setInt(3, to);
+        stmt.setString(4, encryptedAmount);
+        stmt.setDate(5, java.sql.Date.valueOf(date));
+        stmt.setInt(6, id);
+        stmt.executeUpdate();
+    }
+
 }

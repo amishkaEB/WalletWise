@@ -1,5 +1,7 @@
 package view;
 
+import components.MessageBox;
+import controller.CTransactions;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -7,6 +9,7 @@ import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -15,20 +18,45 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.table.DefaultTableModel;
+import model.MTransactions;
 import utils.StatusType;
 
 public class VTransactions extends javax.swing.JPanel {
 
-    public VTransactions() {
-        initComponents();
+    MTransactions model = new MTransactions();
+    CTransactions controller = new CTransactions(model);
 
-        jScrollPane1.setBorder(null);
-        jScrollPane1.getViewport().setBackground(new Color(51, 51, 51));
+    private void tableLoad() {
+        DefaultTableModel tableModel = (DefaultTableModel) transactionsTable1.getModel();
+        tableModel.setRowCount(0);
+        
 
-        jScrollPane1.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+        try {
+            for (Object[] row : controller.getTransactions(comboTime.getSelectedItem().toString())) {
+                transactionsTable1.addRow(row);
+            }
+        } catch (Exception ex) {
+            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                    "Error Occured",
+                    "Database Fatch Failed. Please try again.",
+                    "Back",
+                    Color.RED);
+
+            validateShow.setVisible(true);
+            System.err.println(ex.getMessage());
+        }
+
+        jScrollPane2.setViewportView(transactionsTable1);
+
+        jScrollPane2.setBorder(null);
+        jScrollPane2.getViewport().setBackground(new Color(51, 51, 51));
+
+        jScrollPane2.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             private Color thumbColor = new Color(30, 30, 30);
             private Color trackColor = new Color(60, 60, 60);
 
@@ -69,13 +97,94 @@ public class VTransactions extends javax.swing.JPanel {
             }
         });
 
-        jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(8, Integer.MAX_VALUE));
+        jScrollPane2.getVerticalScrollBar().setPreferredSize(new Dimension(8, Integer.MAX_VALUE));
+    }
+ 
+    java.awt.Window parentWindow = SwingUtilities.getWindowAncestor(this);
 
-        latestTransactionsTable.addRow(new Object[]{"05 May", "Account 01", "Salary", "$2000", StatusType.INCOME});
-        latestTransactionsTable.addRow(new Object[]{"06 May", "Account 02", "Grocery", "$120", StatusType.EXPENSE});
-        latestTransactionsTable.addRow(new Object[]{"07 May", "Account 01", "Bonus", "$500", StatusType.INCOME});
-        latestTransactionsTable.addRow(new Object[]{"08 May", "Account 03", "Electricity Bill", "$80", StatusType.EXPENSE});
-        latestTransactionsTable.addRow(new Object[]{"09 May", "Account 02", "Interest", "$150", StatusType.TRANSFER});
+    public VTransactions() {
+        initComponents();
+
+        tableLoad();
+
+        transactionsTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                int row = transactionsTable1.rowAtPoint(evt.getPoint());
+                int col = transactionsTable1.columnAtPoint(evt.getPoint());
+
+                if (row >= 0 && col == 6) {
+                    int id = (int) transactionsTable1.getValueAt(row, 0);
+                    Date date = (Date) transactionsTable1.getValueAt(row, 1);
+                    String from = (String) transactionsTable1.getValueAt(row, 2);
+                    String to = (String) transactionsTable1.getValueAt(row, 3);
+                    String amount = (String) transactionsTable1.getValueAt(row, 4);
+                    StatusType statusType = (StatusType) transactionsTable1.getValueAt(row, 5);
+                    String type = "";
+                    switch (statusType) {
+                        case EXPENSE ->
+                            type = "Expense";
+                        case INCOME ->
+                            type = "Income";
+                        case TRANSFER ->
+                            type = "Transfer";
+                    }
+                    Component source = (Component) evt.getSource();
+                    Window window = SwingUtilities.getWindowAncestor(source);
+                    
+                    if (window instanceof Frame frame) {
+                        VAddNewTransaction dialog;
+                        try {
+                            dialog = new VAddNewTransaction(frame, true, id, type, date, from, to, amount);
+                            dialog.setLocationRelativeTo(frame);
+
+                            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                                @Override
+                                public void windowClosed(java.awt.event.WindowEvent e) {
+                                    panelBorder2.setVisible(true);
+                                    tableLoad();
+                                }
+
+                                @Override
+                                public void windowClosing(java.awt.event.WindowEvent e) {
+                                    panelBorder2.setVisible(true);
+                                }
+                            });
+
+                            panelBorder2.setVisible(false);
+                            dialog.setVisible(true);
+                        } catch (Exception ex) {
+                            System.err.println(ex.getMessage());
+                        }
+
+                    }
+                } else if (row >= 0 && col == 7) {
+                    evt.consume();
+
+                    int id = (int) transactionsTable1.getValueAt(row, 0);
+                    int option = JOptionPane.showConfirmDialog(VTransactions.this,
+                            "Are you sure you want to delete this transaction",
+                            "Delete Confirmation",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE
+                    );
+                    if (option == JOptionPane.YES_OPTION) {
+                        try {
+                            controller.deleteByID(id);
+                            tableLoad();
+                        } catch (Exception e) {
+                            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                                    "Error Occured",
+                                    "Delete Query Failed. Please try again.",
+                                    "Back",
+                                    Color.RED);
+
+                            validateShow.setVisible(true);
+                        }
+                    }
+                }
+            }
+        });
 
         comboTime.setForeground(Color.WHITE);
         comboTime.setBackground(new Color(0, 0, 0));
@@ -118,8 +227,8 @@ public class VTransactions extends javax.swing.JPanel {
         txtHeading = new javax.swing.JTextField();
         comboTime = new javax.swing.JComboBox<>();
         panelBorder2 = new components.PanelBorder();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        latestTransactionsTable = new utils.LatestTransactionsTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        transactionsTable1 = new utils.TransactionsTable();
         btnExport = new components.PanelBorder();
         jLabel1 = new javax.swing.JLabel();
         btnAdd = new components.PanelBorder();
@@ -143,48 +252,54 @@ public class VTransactions extends javax.swing.JPanel {
         comboTime.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         comboTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "This week", "This month", "This year" }));
         comboTime.setFocusable(false);
+        comboTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboTimeActionPerformed(evt);
+            }
+        });
 
         panelBorder2.setBackground(new java.awt.Color(51, 51, 51));
 
-        jScrollPane1.setBackground(new java.awt.Color(51, 51, 51));
-
-        latestTransactionsTable.setForeground(new java.awt.Color(204, 204, 204));
-        latestTransactionsTable.setModel(new javax.swing.table.DefaultTableModel(
+        transactionsTable1.setForeground(new java.awt.Color(204, 204, 204));
+        transactionsTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Date", "From", "To", "Amount", "Type"
+                "ID", "Date", "From", "To", "Amount", "Type", "", ""
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        latestTransactionsTable.setFocusable(false);
-        latestTransactionsTable.setGridColor(new java.awt.Color(51, 51, 51));
-        latestTransactionsTable.setSelectionBackground(new java.awt.Color(51, 51, 51));
-        jScrollPane1.setViewportView(latestTransactionsTable);
+        transactionsTable1.setFocusable(false);
+        transactionsTable1.setGridColor(new java.awt.Color(51, 51, 51));
+        transactionsTable1.setSelectionBackground(new java.awt.Color(51, 51, 51));
+        jScrollPane2.setViewportView(transactionsTable1);
 
         javax.swing.GroupLayout panelBorder2Layout = new javax.swing.GroupLayout(panelBorder2);
         panelBorder2.setLayout(panelBorder2Layout);
         panelBorder2Layout.setHorizontalGroup(
             panelBorder2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelBorder2Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 877, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addGap(15, 15, 15)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 901, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         panelBorder2Layout.setVerticalGroup(
             panelBorder2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelBorder2Layout.createSequentialGroup()
-                .addContainerGap(15, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
+                .addContainerGap(16, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
         );
 
         btnExport.setBackground(new java.awt.Color(204, 204, 204));
@@ -245,15 +360,15 @@ public class VTransactions extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(20, 20, 20)
                         .addComponent(txtHeading, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 221, Short.MAX_VALUE)
                         .addComponent(comboTime, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(20, 20, 20))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -277,7 +392,7 @@ public class VTransactions extends javax.swing.JPanel {
                 .addGroup(layout.createSequentialGroup()
                     .addGap(66, 66, 66)
                     .addComponent(panelBorder2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(68, Short.MAX_VALUE)))
+                    .addContainerGap(51, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -298,6 +413,7 @@ public class VTransactions extends javax.swing.JPanel {
                     @Override
                     public void windowClosed(java.awt.event.WindowEvent e) {
                         panelBorder2.setVisible(true);
+                        tableLoad();
                     }
 
                     @Override
@@ -316,6 +432,10 @@ public class VTransactions extends javax.swing.JPanel {
 
     }//GEN-LAST:event_btnAddMouseClicked
 
+    private void comboTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboTimeActionPerformed
+        tableLoad();
+    }//GEN-LAST:event_comboTimeActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private components.PanelBorder btnAdd;
@@ -323,9 +443,9 @@ public class VTransactions extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> comboTime;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private utils.LatestTransactionsTable latestTransactionsTable;
+    private javax.swing.JScrollPane jScrollPane2;
     private components.PanelBorder panelBorder2;
+    private utils.TransactionsTable transactionsTable1;
     private javax.swing.JTextField txtHeading;
     // End of variables declaration//GEN-END:variables
 }

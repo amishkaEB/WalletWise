@@ -1,14 +1,22 @@
 package view;
 
+import com.toedter.calendar.JDateChooser;
+import components.MessageBox;
 import controller.CAddTransactions;
 import java.awt.Color;
 import java.awt.Component;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -20,32 +28,48 @@ import model.MAddTransaction;
 
 public class VAddNewTransaction extends javax.swing.JDialog {
 
+    boolean isNew = true;
+    int editId;
+
     List<Map<String, Object>> expenseCategories = new ArrayList<>();
     List<Map<String, Object>> incomeCategories = new ArrayList<>();
     List<Map<String, Object>> accounts = new ArrayList<>();
 
     public VAddNewTransaction(java.awt.Frame parent, boolean modal) throws Exception {
+        this(parent, modal, 0, null, null, null, null, null);
+    }
+
+    public VAddNewTransaction(java.awt.Frame parent, boolean modal, int id, String type, Date date, String from, String to, String amount) throws Exception {
         super(parent, modal);
         setUndecorated(true);
         setBackground(new Color(0, 0, 0, 0));
         initComponents();
+        styleInitial();
 
+        if (id != 0 && type != null && date != null && from != null && to != null && amount != null) {
+            isNew = false;
+            editId = id;
+            comboFrom.setSelectedItem(from);
+            comboType.setSelectedItem(type);
+            comboTo.setSelectedItem(to);
+            inputDate.setDate(date);
+            inputAmount.setText(amount);
+            btnLabel.setText("Edit");
+        }
+    }
+
+    private void styleInitial() throws Exception {
         styleDarkComboBox(comboType);
         styleDarkComboBox(comboFrom);
         styleDarkComboBox(comboTo);
 
-        UIManager.put("JCalendar.background", new Color(20, 20, 20));
-        UIManager.put("JCalendar.foreground", Color.WHITE);
-        UIManager.put("JCalendar.selectionBackground", new Color(70, 70, 70));
-        UIManager.put("JCalendar.selectionForeground", Color.WHITE);
+        if (inputDate.getDate() == null) {
+            inputDate.setDate(new Date());
+        }
 
-        inputDate = new com.toedter.calendar.JDateChooser();
-        inputDate.setDateFormatString("dd-MM-yyyy");
-
+        //inputDate = new com.toedter.calendar.JDateChooser();
+        //inputDate.setDateFormatString("dd-MM-yyyy");
         JTextField editor = (JTextField) inputDate.getDateEditor().getUiComponent();
-        editor.setBackground(new Color(20, 20, 20));
-        editor.setForeground(Color.WHITE);
-        editor.setCaretColor(Color.WHITE);
         editor.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
         SwingUtilities.updateComponentTreeUI(inputDate);
@@ -64,6 +88,8 @@ public class VAddNewTransaction extends javax.swing.JDialog {
         comboFrom.removeAllItems();
         comboTo.removeAllItems();
 
+        inputDate.setDateFormatString("yyyy-MM-dd");
+
         for (Map<String, Object> row : accounts) {
             comboFrom.addItem(row.get("name").toString());
         }
@@ -74,7 +100,7 @@ public class VAddNewTransaction extends javax.swing.JDialog {
 
         PlainDocument doc = (PlainDocument) inputAmount.getDocument();
         doc.setDocumentFilter(new PositiveNumberFilter());
-
+        inputDate.setCalendar(Calendar.getInstance());
     }
 
     @SuppressWarnings("unchecked")
@@ -98,7 +124,7 @@ public class VAddNewTransaction extends javax.swing.JDialog {
         btnBack = new components.PanelBorder();
         jLabel1 = new javax.swing.JLabel();
         btnAdd = new components.PanelBorder();
-        jLabel2 = new javax.swing.JLabel();
+        btnLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
@@ -123,7 +149,6 @@ public class VAddNewTransaction extends javax.swing.JDialog {
         jLabel3.setText("Date :");
 
         inputDate.setForeground(new java.awt.Color(255, 255, 255));
-        inputDate.setDateFormatString("dd-MM-yyyy");
         inputDate.setMinSelectableDate(new java.util.Date(-62135785732000L));
 
         jLabel4.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
@@ -251,10 +276,15 @@ public class VAddNewTransaction extends javax.swing.JDialog {
         );
 
         btnAdd.setBackground(new java.awt.Color(153, 255, 153));
+        btnAdd.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAddMouseClicked(evt);
+            }
+        });
 
-        jLabel2.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Add");
+        btnLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        btnLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        btnLabel.setText("Add");
 
         javax.swing.GroupLayout btnAddLayout = new javax.swing.GroupLayout(btnAdd);
         btnAdd.setLayout(btnAddLayout);
@@ -262,14 +292,14 @@ public class VAddNewTransaction extends javax.swing.JDialog {
             btnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(btnAddLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
+                .addComponent(btnLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
                 .addContainerGap())
         );
         btnAddLayout.setVerticalGroup(
             btnAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(btnAddLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -352,6 +382,7 @@ public class VAddNewTransaction extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBackMouseClicked
+
         dispose();
     }//GEN-LAST:event_btnBackMouseClicked
 
@@ -380,6 +411,14 @@ public class VAddNewTransaction extends javax.swing.JDialog {
         }
     }
 
+    public Integer getIdByName(String name, List<Map<String, Object>> categories) {
+        for (Map<String, Object> row : categories) {
+            if (row.get("name").toString().equalsIgnoreCase(name)) {
+                return (Integer) row.get("id");
+            }
+        }
+        return null;
+    }
 
     private void comboTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboTypeActionPerformed
         comboFrom.removeAllItems();
@@ -411,6 +450,102 @@ public class VAddNewTransaction extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_comboTypeActionPerformed
+
+    MAddTransaction model = new MAddTransaction();
+    CAddTransactions controller = new CAddTransactions(model);
+
+    private void btnAddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAddMouseClicked
+        String type = comboType.getSelectedItem().toString();
+        String from = comboFrom.getSelectedItem().toString();
+        String to = comboTo.getSelectedItem().toString();
+        String amount = inputAmount.getText();
+        String date;
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            date = dateFormat.format(inputDate.getDate());
+        } catch (Exception ex) {
+            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                    "Error Occured",
+                    "Please enter a valid date",
+                    "Back",
+                    Color.RED);
+
+            validateShow.setVisible(true);
+            return;
+        }
+
+        Integer fromId = null, toId = null;
+
+        if ("Expense".equals(type)) {
+            fromId = getIdByName(from, accounts);
+            toId = getIdByName(to, expenseCategories);
+        } else if ("Income".equals(type)) {
+            fromId = getIdByName(from, incomeCategories);
+            toId = getIdByName(to, accounts);
+        } else if ("Transfer".equals(type)) {
+            fromId = getIdByName(from, accounts);
+            toId = getIdByName(to, accounts);
+        }
+
+        if (type.equals("Transfer") && from.equals(to)) {
+            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                    "Same account transfer",
+                    "<html>Please select different accounts<br>to make transfer.</html>",
+                    "Back",
+                    Color.YELLOW);
+
+            validateShow.setVisible(true);
+            return;
+        }
+
+        if (amount != null && !amount.isEmpty()) {
+            try {
+                if (isNew) {
+                    controller.insertTransaction(type, fromId, toId, amount, date);
+                    MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                            "Succesfull",
+                            "Transaction Recorded.",
+                            "Back",
+                            Color.GREEN);
+
+                    validateShow.setVisible(true);
+                } else {
+                    controller.updateTransaction(editId, type, fromId, toId, amount, date);
+                    MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                            "Succesfull",
+                            "Transaction Updated.",
+                            "Back",
+                            Color.GREEN);
+
+                    validateShow.setVisible(true);
+                }
+
+                dispose();
+            } catch (Exception ex) {
+                System.err.println(ex.getMessage());
+                MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                        "Error Occured",
+                        "Database connection Failed. Please try again.",
+                        "Back",
+                        Color.RED);
+
+                validateShow.setVisible(true);
+            }
+        } else {
+            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                    "Error Occured",
+                    "Please enter a amount",
+                    "Back",
+                    Color.RED);
+
+            validateShow.setVisible(true);
+        }
+
+
+    }//GEN-LAST:event_btnAddMouseClicked
+
+    java.awt.Window parentWindow = SwingUtilities.getWindowAncestor(this);
 
     private void styleDarkComboBox(JComboBox<?> comboBox) {
         comboBox.setForeground(Color.WHITE);
@@ -472,13 +607,13 @@ public class VAddNewTransaction extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private components.PanelBorder btnAdd;
     private components.PanelBorder btnBack;
+    private javax.swing.JLabel btnLabel;
     private javax.swing.JComboBox<String> comboFrom;
     private javax.swing.JComboBox<String> comboTo;
     private javax.swing.JComboBox<String> comboType;
     private javax.swing.JTextField inputAmount;
     private com.toedter.calendar.JDateChooser inputDate;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;

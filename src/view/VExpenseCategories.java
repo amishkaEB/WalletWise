@@ -11,8 +11,6 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import model.MExpenseCategory;
 import controller.CExpenseCategory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import utils.Validations;
 
