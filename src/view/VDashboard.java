@@ -16,7 +16,8 @@ public class VDashboard extends javax.swing.JFrame {
             public void selected(int index) {
                 switch (index) {
                     case 0 -> setForm(new VHome());
-                    case 4 -> setForm(new VTransactions());
+                    case 1 -> setForm(new VAnalysis());
+                    case 2 -> setForm(new VTransactions());
                     case 8 -> setForm(new VCategories());
                     case 9 -> setForm(new VMore());
                     case 10 -> System.exit(0);

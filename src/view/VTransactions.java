@@ -9,7 +9,15 @@ import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -24,6 +32,16 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableModel;
 import model.MTransactions;
+import model.MTransactions.TransactionRowExport;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.view.JasperViewer;
 import utils.StatusType;
 
 public class VTransactions extends javax.swing.JPanel {
@@ -34,7 +52,6 @@ public class VTransactions extends javax.swing.JPanel {
     private void tableLoad() {
         DefaultTableModel tableModel = (DefaultTableModel) transactionsTable1.getModel();
         tableModel.setRowCount(0);
-        
 
         try {
             for (Object[] row : controller.getTransactions(comboTime.getSelectedItem().toString())) {
@@ -99,7 +116,7 @@ public class VTransactions extends javax.swing.JPanel {
 
         jScrollPane2.getVerticalScrollBar().setPreferredSize(new Dimension(8, Integer.MAX_VALUE));
     }
- 
+
     java.awt.Window parentWindow = SwingUtilities.getWindowAncestor(this);
 
     public VTransactions() {
@@ -131,7 +148,7 @@ public class VTransactions extends javax.swing.JPanel {
                     }
                     Component source = (Component) evt.getSource();
                     Window window = SwingUtilities.getWindowAncestor(source);
-                    
+
                     if (window instanceof Frame frame) {
                         VAddNewTransaction dialog;
                         try {
@@ -303,6 +320,11 @@ public class VTransactions extends javax.swing.JPanel {
         );
 
         btnExport.setBackground(new java.awt.Color(204, 204, 204));
+        btnExport.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnExportMouseClicked(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -435,6 +457,102 @@ public class VTransactions extends javax.swing.JPanel {
     private void comboTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboTimeActionPerformed
         tableLoad();
     }//GEN-LAST:event_comboTimeActionPerformed
+
+    public class exportRowTransaction {
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getFrom() {
+            return from;
+        }
+
+        public void setFrom(String from) {
+            this.from = from;
+        }
+
+        public String getTo() {
+            return to;
+        }
+
+        public void setTo(String to) {
+            this.to = to;
+        }
+
+        public String getAmount() {
+            return amount;
+        }
+
+        public void setAmount(String amount) {
+            this.amount = amount;
+        }
+        private String date;
+        private String type;
+        private String from;
+        private String to;
+        private String amount;
+    }
+
+    private void btnExportMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExportMouseClicked
+        try {
+            List<Object[]> dataList = controller.getTransactionsForExport(comboTime.getSelectedItem().toString());
+            List<exportRowTransaction> listItems = new ArrayList<exportRowTransaction>();
+
+            for (Object[] row : dataList) {
+                Date dateObj = (Date) row[0];
+                String date = new SimpleDateFormat("yyyy-MM-dd").format(dateObj);
+                String type = (String) row[1];
+                String from = (String) row[2];
+                String to = (String) row[3];
+                String amount = (String) row[4];
+
+                exportRowTransaction item = new exportRowTransaction();
+                item.setDate(date);
+                item.setType(type);
+                item.setFrom(from);
+                item.setTo(to);
+                item.setAmount(amount);
+
+                listItems.add(item);
+            }
+
+            JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(listItems);
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("CollectionBeanParam", itemsJRBean);
+
+            InputStream input = new FileInputStream(new File("src/reports/Transactions.jrxml"));
+            JasperDesign jasperDesign = JRXmlLoader.load(input);
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, param, itemsJRBean);
+
+            JasperViewer viewer = new JasperViewer(jasperPrint, false);
+            viewer.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+            viewer.setVisible(true);
+
+        } catch (Exception ex) {
+            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                    "Error Occured",
+                    "Report generation failed.",
+                    "Back",
+                    Color.RED);
+
+            validateShow.setVisible(true);
+            System.err.println(ex.getMessage());
+        }
+    }//GEN-LAST:event_btnExportMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

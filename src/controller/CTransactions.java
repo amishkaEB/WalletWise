@@ -19,4 +19,8 @@ public class CTransactions {
     public void deleteByID(int id) throws Exception {
          model.deleteByID(id);
     }
+    
+    public List<Object[]> getTransactionsForExport(String timePeriod) throws Exception {
+        return model.getTransactionsForExport(timePeriod);
+    }
 }

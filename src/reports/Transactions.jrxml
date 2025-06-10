@@ -1,0 +1,169 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="Blank_A4" language="java" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="dc95628b-e95a-4d34-bfd4-206c82230389">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#C9C9C9">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<dataset name="Dataset1" uuid="ddccba42-2ab0-4936-bc3e-bb34efa02a02">
+		<query language="sql"><![CDATA[]]></query>
+		<field name="date" class="java.lang.String"/>
+		<field name="type" class="java.lang.String"/>
+		<field name="from" class="java.lang.String"/>
+		<field name="to" class="java.lang.String"/>
+		<field name="amount" class="java.lang.String"/>
+	</dataset>
+	<parameter name="CollectionBeanParam" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<query language="sql"><![CDATA[]]></query>
+	<background splitType="Stretch"/>
+	<title height="53" splitType="Stretch"/>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader height="45" splitType="Stretch">
+		<element kind="frame" uuid="a5999762-97b7-4810-a167-a92d186a1aac" mode="Opaque" x="-1" y="2" width="556" height="40" backcolor="#3D3D3D">
+			<element kind="staticText" uuid="74e02720-7099-468b-83a0-73c6a8634a9a" x="30" y="0" width="160" height="40" forecolor="#F0F0F0" fontName="Verdana" fontSize="13.0" vTextAlign="Middle">
+				<text><![CDATA[Transactions]]></text>
+			</element>
+			<element kind="textField" uuid="ecc80bcb-65a9-4f67-aff1-50a9524f6996" x="420" y="5" width="120" height="30" forecolor="#A6A6A6" fontName="Verdana" pattern="MMMMM dd, yyyy" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+			<element kind="frame" uuid="0b691833-0862-4caa-b59f-f947fb1aae5a" mode="Opaque" x="0" y="-55" width="556" height="59" backcolor="#121212">
+				<element kind="image" uuid="29ee5dda-a6ab-4596-af84-68a9fa04b5a9" x="20" y="8" width="35" height="35">
+					<expression><![CDATA["src/assets/logo.png"]]></expression>
+				</element>
+				<element kind="staticText" uuid="632190f1-2cf1-4e79-9357-9907415a0301" x="60" y="0" width="150" height="50" forecolor="#F0F0F0" fontName="Vivaldi" fontSize="25.0" vTextAlign="Middle">
+					<text><![CDATA[WalletWise]]></text>
+				</element>
+			</element>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="110" splitType="Stretch">
+			<element kind="component" uuid="3737df89-dae5-42d6-b820-450e8fd8aa01" x="10" y="10" width="534" height="80">
+				<component kind="table">
+					<datasetRun uuid="d8b0efda-9132-4c5f-a3bf-d1705b20591d" subDataset="Dataset1">
+						<dataSourceExpression><![CDATA[$P{CollectionBeanParam}]]></dataSourceExpression>
+					</datasetRun>
+					<column kind="single" uuid="9ecec11c-50c1-4468-ad7f-2e515ded673a" width="100">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="e726c76f-1cd7-4b2f-b04a-117a49d6c458" x="0" y="0" width="100" height="30" fontName="Verdana" hTextAlign="Left" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<text><![CDATA[Date]]></text>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</columnHeader>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="013bd6c9-4ce6-4fa9-8aa3-19e286d95097" x="0" y="0" width="100" height="30" fontName="Verdana" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<expression><![CDATA[$F{date}]]></expression>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+					</column>
+					<column kind="single" uuid="6d0d0889-c3f7-4d6b-904d-bd78636be74a" width="90">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="e15f4594-bfc3-4bd3-977d-c0546327c8fa" x="0" y="0" width="90" height="30" fontName="Verdana" hTextAlign="Left" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<text><![CDATA[Type]]></text>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</columnHeader>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="beb4267a-52a9-415d-9439-f08d6e778039" x="0" y="0" width="90" height="30" fontName="Verdana" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<expression><![CDATA[$F{type}]]></expression>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+					</column>
+					<column kind="single" uuid="2407bd49-692f-46aa-b38a-077cebb27421" width="90">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="1960dabc-49ad-4fca-81cd-ae5e59b4a5d4" x="0" y="0" width="90" height="30" fontName="Verdana" hTextAlign="Left" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<text><![CDATA[From]]></text>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</columnHeader>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="ea72dbc5-80cc-46b9-b497-0d614ee65b1d" x="0" y="0" width="90" height="30" fontName="Verdana" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<expression><![CDATA[$F{from}]]></expression>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+					</column>
+					<column kind="single" uuid="da7309b9-d2cb-46b6-9059-258ae4ba134c" width="110">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="33c83fa8-37f1-46c5-af26-6d82d268857b" x="0" y="0" width="110" height="30" fontName="Verdana" hTextAlign="Left" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<text><![CDATA[To]]></text>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</columnHeader>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="60cdc561-12a2-4d03-b29b-757492ded23d" x="0" y="0" width="110" height="30" fontName="Verdana" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<expression><![CDATA[$F{to}]]></expression>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+					</column>
+					<column kind="single" uuid="36694054-6513-4ca3-a25b-4c0b35a030fe" width="130">
+						<columnHeader height="30" rowSpan="1" style="Table_CH">
+							<element kind="staticText" uuid="0de701db-a2d4-4dc9-b1af-99d0ba0b8ef4" x="0" y="0" width="130" height="30" fontName="Verdana" hTextAlign="Left" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<text><![CDATA[Amount]]></text>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</columnHeader>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="bb3cf2eb-a8b9-4bf5-af7f-b65a75948f14" x="0" y="0" width="130" height="30" fontName="Verdana" vTextAlign="Middle">
+								<paragraph leftIndent="10"/>
+								<expression><![CDATA[$F{amount}]]></expression>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+					</column>
+				</component>
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+				<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+				<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+				<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="50" splitType="Stretch">
+		<element kind="staticText" uuid="ca12946f-63b2-40e2-8263-5935a6b36c23" x="0" y="0" width="555" height="50" forecolor="#050505" fontName="Vivaldi" fontSize="25.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[WalletWise]]></text>
+		</element>
+	</pageFooter>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>
