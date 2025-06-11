@@ -15,15 +15,25 @@ public class VDashboard extends javax.swing.JFrame {
             @Override
             public void selected(int index) {
                 switch (index) {
-                    case 0 -> setForm(new VHome());
-                    case 1 -> setForm(new VAnalysis());
-                    case 2 -> setForm(new VTransactions());
-                    case 8 -> setForm(new VCategories());
-                    case 9 -> setForm(new VMore());
-                    case 10 -> System.exit(0);
-                    default -> setForm(new BlankView());
+                    case 0 ->
+                        setForm(new VHome());
+                    case 1 ->
+                        setForm(new VAnalysis());
+                    case 2 ->
+                        setForm(new VTransactions());
+                    case 3 ->
+                        setForm(new VBudget());
+                    case 4 ->
+                        setForm(new VNotification());
+                    case 8 ->
+                        setForm(new VCategories());
+                    case 9 ->
+                        setForm(new VMore());
+                    case 10 ->
+                        System.exit(0);
+                    default ->
+                        setForm(new VBudget());
                 }
-                
 
             }
 
