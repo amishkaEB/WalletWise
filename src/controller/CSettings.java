@@ -17,4 +17,8 @@ public class CSettings {
     public void updateSettings(String symbol, boolean symbolFirst, boolean separator, String startScreen) throws Exception {
         model.updateSettings(symbol, symbolFirst, separator, startScreen);
     }
+    
+    public boolean updatePwd(String currentP, String newP) throws Exception{
+        return model.updatePwd(currentP, newP);
+    }
 }

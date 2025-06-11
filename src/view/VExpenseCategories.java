@@ -41,6 +41,10 @@ public class VExpenseCategories extends javax.swing.JPanel {
             validateShow.setVisible(true);
         }
 
+        incomeCategoryTable1.getColumnModel().getColumn(0).setMinWidth(0);
+        incomeCategoryTable1.getColumnModel().getColumn(0).setMaxWidth(0);
+        incomeCategoryTable1.getColumnModel().getColumn(0).setWidth(0);
+
         jScrollPane1.setViewportView(incomeCategoryTable1);
 
         jScrollPane1.setBorder(null);
@@ -519,9 +523,9 @@ public class VExpenseCategories extends javax.swing.JPanel {
 
             validateShow.setVisible(true);
         } else if (isNew == true) {
-            try{
-            controller.insertCategory(catName, categoryColor);
-            
+            try {
+                controller.insertCategory(catName, categoryColor);
+
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Succesfully Created",
                         "Category Created.",
@@ -535,7 +539,7 @@ public class VExpenseCategories extends javax.swing.JPanel {
                 tableLoad();
                 this.revalidate();
                 this.repaint();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Error Occured",
                         "Insert Query Failed. Please try again.",
@@ -545,7 +549,7 @@ public class VExpenseCategories extends javax.swing.JPanel {
                 validateShow.setVisible(true);
             }
         } else {
-            try{
+            try {
                 controller.updateCategory(catName, categoryColor, editIndex);
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Succesfully Updated",
@@ -564,7 +568,7 @@ public class VExpenseCategories extends javax.swing.JPanel {
                 tableLoad();
                 this.revalidate();
                 this.repaint();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
                         "Error Occured",
                         "Insert Query Failed. Please try again.",

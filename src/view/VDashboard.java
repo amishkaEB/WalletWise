@@ -1,16 +1,51 @@
 package view;
 
+import components.MessageBox;
+import controller.CHome;
 import controller.EventMenuSelected;
 import java.awt.*;
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import model.MHome;
 
 public class VDashboard extends javax.swing.JFrame {
 
+    java.awt.Window parentWindow = SwingUtilities.getWindowAncestor(this);
+
     public VDashboard() {
         initComponents();
+        MHome model = new MHome();
+        CHome controller = new CHome(model);
+
+        try {
+            String startScreen = controller.getStartScreen();
+
+            switch (startScreen) {
+                case "Dashboard" ->
+                    setForm(new VHome());
+                case "Analytics" ->
+                    setForm(new VAnalysis());
+                case "Transactions" ->
+                    setForm(new VTransactions());
+                case "Budget" ->
+                    setForm(new VBudget());
+                case "Notifications" ->
+                    setForm(new VNotification());
+            }
+
+        } catch (Exception ex) {
+            MessageBox validateShow = new MessageBox((java.awt.Frame) parentWindow,
+                    "Error Occured",
+                    "Database Fatch Failed. Please try again.",
+                    "Back",
+                    Color.RED);
+
+            validateShow.setVisible(true);
+            System.err.println(ex.getMessage());
+        }
+
         setBackground(new Color(0, 0, 0, 0));
         menu2.initMoving(VDashboard.this);
-        setForm(new VHome());
         menu2.addEventMenuSelected(new EventMenuSelected() {
             @Override
             public void selected(int index) {
@@ -28,13 +63,12 @@ public class VDashboard extends javax.swing.JFrame {
                     case 8 ->
                         setForm(new VCategories());
                     case 9 ->
-                        setForm(new VMore());
+                        setForm(new VSettings());
                     case 10 ->
                         System.exit(0);
                     default ->
                         setForm(new VBudget());
                 }
-
             }
 
         });

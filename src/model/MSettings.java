@@ -3,6 +3,7 @@ package model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import utils.Crypto;
 import utils.DBConnection;
 
 public class MSettings {
@@ -38,6 +39,29 @@ public class MSettings {
 
         ps.executeUpdate();
 
+    }
+    
+    public boolean updatePwd (String currentP, String newP) throws Exception {
+        String query = "Select pwd from settings limit 1";
+
+        Connection con = DBConnection.getConnection();
+        PreparedStatement ps = con.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
+        
+        rs.next();
+        String realPwd = Crypto.decrypt(rs.getString(1));
+        
+        if (!realPwd.equals(currentP)){
+            return false;
+        } 
+        
+        String savigPwd = Crypto.encrypt(newP);
+        String insertQuery = "update settings set pwd = ?";
+        PreparedStatement insertps = con.prepareStatement(insertQuery);
+        
+        insertps.setString(1, savigPwd);
+        insertps.executeUpdate();
+        return true;
     }
 
 };

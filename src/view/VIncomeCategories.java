@@ -40,6 +40,10 @@ public class VIncomeCategories extends javax.swing.JPanel {
 
             validateShow.setVisible(true);
         }
+        
+        incomeCategoryTable1.getColumnModel().getColumn(0).setMinWidth(0);
+        incomeCategoryTable1.getColumnModel().getColumn(0).setMaxWidth(0);
+        incomeCategoryTable1.getColumnModel().getColumn(0).setWidth(0);
 
         jScrollPane1.setViewportView(incomeCategoryTable1);
 

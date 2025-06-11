@@ -9,13 +9,15 @@ import model.MMenu;
 import controller.EventMenuSelected;
 
 public class Menu extends javax.swing.JPanel {
-    
+
     private EventMenuSelected event;
-    
-    public void addEventMenuSelected (EventMenuSelected event){
+
+    public void addEventMenuSelected(EventMenuSelected event) {
         this.event = event;
         listMenu1.addEventMenuSelected(event);
     }
+
+    
 
     public Menu() {
         initComponents();
@@ -23,7 +25,7 @@ public class Menu extends javax.swing.JPanel {
         listMenu1.setOpaque(false);
         init();
     }
-    
+
     private void init() {
         listMenu1.addItem(new MMenu("1", "Dashboard", MMenu.MenuType.MENU));
         listMenu1.addItem(new MMenu("4", "Analytics", MMenu.MenuType.MENU));
@@ -35,7 +37,7 @@ public class Menu extends javax.swing.JPanel {
         listMenu1.addItem(new MMenu("", "Manage Application", MMenu.MenuType.TITLE));
         listMenu1.addItem(new MMenu("", " ", MMenu.MenuType.EMPTY));
         listMenu1.addItem(new MMenu("5", "Category", MMenu.MenuType.MENU));
-        listMenu1.addItem(new MMenu("9", "More", MMenu.MenuType.MENU));
+        listMenu1.addItem(new MMenu("9", "Settings", MMenu.MenuType.MENU));
         listMenu1.addItem(new MMenu("8", "Close App", MMenu.MenuType.MENU));
         listMenu1.addItem(new MMenu("", "", MMenu.MenuType.EMPTY));
     }
@@ -102,10 +104,10 @@ public class Menu extends javax.swing.JPanel {
 
         super.paintComponent(g);
     }
-    
+
     private int x;
     private int y;
-    
+
     public void initMoving(JFrame fram) {
         panelMoving.addMouseListener(new MouseAdapter() {
             @Override
@@ -114,13 +116,13 @@ public class Menu extends javax.swing.JPanel {
                 y = e.getY();
             }
         });
-        
+
         panelMoving.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 fram.setLocation(e.getXOnScreen() - x, e.getYOnScreen() - y);
             }
-            
+
         });
     }
 
@@ -130,4 +132,5 @@ public class Menu extends javax.swing.JPanel {
     private utils.ListMenu<String> listMenu1;
     private javax.swing.JPanel panelMoving;
     // End of variables declaration//GEN-END:variables
+
 }

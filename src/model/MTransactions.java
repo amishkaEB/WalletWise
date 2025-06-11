@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.*;
 import utils.Crypto;
 import utils.DBConnection;
 import utils.StatusType;
@@ -14,15 +15,19 @@ public class MTransactions {
 
     public List<Object[]> getTransactions(String timePeriod) throws Exception {
         List<Object[]> list = new ArrayList<>();
-        String filterCondition = "";
-        if (timePeriod.equals("This year")) {
+        String symbol = "";
+        boolean symbolFirst = false, separator = false;
+
+        String filterCondition;
+        if ("This year".equals(timePeriod)) {
             filterCondition = "YEAR(t.date) = YEAR(CURDATE())";
-        } else if (timePeriod.equals("This month")) {
+        } else if ("This month".equals(timePeriod)) {
             filterCondition = "YEAR(t.date) = YEAR(CURDATE()) AND MONTH(t.date) = MONTH(CURDATE())";
         } else {
             filterCondition = "YEAR(t.date) = YEAR(CURDATE()) AND WEEK(t.date, 1) = WEEK(CURDATE(), 1)";
         }
 
+        String settingQuery = "SELECT * FROM Settings LIMIT 1";
         String query = "SELECT t.id, t.date, t.amount, t.type, "
                 + "CASE WHEN t.type = 'Expense' THEN a_from.name "
                 + "     WHEN t.type = 'Income' THEN ic_from.name "
@@ -41,33 +46,69 @@ public class MTransactions {
                 + "ORDER BY t.date DESC";
 
         Connection con = DBConnection.getConnection();
+
+        PreparedStatement settingps = con.prepareStatement(settingQuery);
+        ResultSet settingrs = settingps.executeQuery();
+        if (settingrs.next()) {
+            symbol = settingrs.getString("Symbol");
+            symbolFirst = settingrs.getBoolean("SymbolFirst");
+            separator = settingrs.getBoolean("Seperator");
+        }
+
         PreparedStatement ps = con.prepareStatement(query);
         ResultSet rs = ps.executeQuery();
+
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        List<Future<Object[]>> futures = new ArrayList<>();
+
+        final String finalSymbol = symbol;
+        final boolean finalSymbolFirst = symbolFirst;
+        final boolean finalSeparator = separator;
+
         while (rs.next()) {
-            StatusType statusType;
-            String amount = rs.getString("amount");
-            String type = rs.getString("type");
+            final int id = rs.getInt("id");
+            final Date date = rs.getDate("date");
+            final String amount = rs.getString("amount");
+            final String type = rs.getString("type");
+            final String fromName = rs.getString("fromName");
+            final String toName = rs.getString("toName");
 
-            if ("Expense".equals(type)) {
-                statusType = StatusType.EXPENSE;
-            } else if ("Income".equals(type)) {
-                statusType = StatusType.INCOME;
-            } else {
-                statusType = StatusType.TRANSFER;
-            }
+            Callable<Object[]> task = () -> {
+                StatusType statusType;
+                if ("Expense".equals(type)) {
+                    statusType = StatusType.EXPENSE;
+                } else if ("Income".equals(type)) {
+                    statusType = StatusType.INCOME;
+                } else {
+                    statusType = StatusType.TRANSFER;
+                }
 
-            String decryptedAmount = Crypto.decrypt(amount);
-            Object[] row = {
-                rs.getInt("id"),
-                rs.getDate("date"),
-                rs.getString("fromName"),
-                rs.getString("toName"),
-                decryptedAmount,
-                statusType,
-                "", ""
+                String decryptedAmount = Crypto.decrypt(amount);
+                String formattedAmount = decryptedAmount;
+
+                if (finalSeparator) {
+                    double value = Double.parseDouble(decryptedAmount);
+                    formattedAmount = String.format("%,d", (long) value);
+                }
+
+                String displayAmount;
+                if (finalSymbolFirst) {
+                    displayAmount = finalSymbol + (finalSeparator ? " " : "") + formattedAmount;
+                } else {
+                    displayAmount = formattedAmount + (finalSeparator ? " " : "") + finalSymbol;
+                }
+
+                return new Object[]{id, date, fromName, toName, displayAmount, statusType, "", ""};
             };
-            list.add(row);
+
+            futures.add(executor.submit(task));
         }
+
+        for (Future<Object[]> future : futures) {
+            list.add(future.get());
+        }
+
+        executor.shutdown();
         return list;
     }
 
@@ -81,15 +122,19 @@ public class MTransactions {
 
     public List<Object[]> getTransactionsForExport(String timePeriod) throws Exception {
         List<Object[]> list = new ArrayList<>();
-        String filterCondition = "";
-        if (timePeriod.equals("This year")) {
+        String symbol = "";
+        boolean symbolFirst = false, separator = false;
+
+        String filterCondition;
+        if ("This year".equals(timePeriod)) {
             filterCondition = "YEAR(t.date) = YEAR(CURDATE())";
-        } else if (timePeriod.equals("This month")) {
+        } else if ("This month".equals(timePeriod)) {
             filterCondition = "YEAR(t.date) = YEAR(CURDATE()) AND MONTH(t.date) = MONTH(CURDATE())";
         } else {
             filterCondition = "YEAR(t.date) = YEAR(CURDATE()) AND WEEK(t.date, 1) = WEEK(CURDATE(), 1)";
         }
 
+        String settingQuery = "SELECT * FROM Settings LIMIT 1";
         String query = "SELECT t.id, t.date, t.amount, t.type, "
                 + "CASE WHEN t.type = 'Expense' THEN a_from.name "
                 + "     WHEN t.type = 'Income' THEN ic_from.name "
@@ -108,24 +153,61 @@ public class MTransactions {
                 + "ORDER BY t.date DESC";
 
         Connection con = DBConnection.getConnection();
+
+        PreparedStatement settingps = con.prepareStatement(settingQuery);
+        ResultSet settingrs = settingps.executeQuery();
+        if (settingrs.next()) {
+            symbol = settingrs.getString("Symbol");
+            symbolFirst = settingrs.getBoolean("SymbolFirst");
+            separator = settingrs.getBoolean("Seperator");
+        }
+
         PreparedStatement ps = con.prepareStatement(query);
         ResultSet rs = ps.executeQuery();
-        List<TransactionRowExport> transactionList = new ArrayList<>();
-        while (rs.next()) {
-            StatusType statusType;
-            String amount = rs.getString("amount");
-            String type = rs.getString("type");
-            String decryptedAmount = Crypto.decrypt(amount);
 
-            Object[] row = {
-                rs.getDate("date"),
-                type,
-                rs.getString("fromName"),
-                rs.getString("toName"),
-                decryptedAmount,
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        List<Future<Object[]>> futures = new ArrayList<>();
+
+        final String finalSymbol = symbol;
+        final boolean finalSymbolFirst = symbolFirst;
+        final boolean finalSeparator = separator;
+
+        while (rs.next()) {
+            final int id = rs.getInt("id");
+            final Date date = rs.getDate("date");
+            final String amount = rs.getString("amount");
+            final String type = rs.getString("type");
+            final String fromName = rs.getString("fromName");
+            final String toName = rs.getString("toName");
+
+            Callable<Object[]> task = () -> {
+
+                String decryptedAmount = Crypto.decrypt(amount);
+                String formattedAmount = decryptedAmount;
+
+                if (finalSeparator) {
+                    double value = Double.parseDouble(decryptedAmount);
+                    formattedAmount = String.format("%,d", (long) value);
+                }
+
+                String displayAmount;
+                if (finalSymbolFirst) {
+                    displayAmount = finalSymbol + (finalSeparator ? " " : "") + formattedAmount;
+                } else {
+                    displayAmount = formattedAmount + (finalSeparator ? " " : "") + finalSymbol;
+                }
+
+                return new Object[]{date, type, fromName, toName, displayAmount};
             };
-            list.add(row);
+
+            futures.add(executor.submit(task));
         }
+
+        for (Future<Object[]> future : futures) {
+            list.add(future.get());
+        }
+
+        executor.shutdown();
         return list;
     }
 

@@ -68,6 +68,10 @@ public class VTransactions extends javax.swing.JPanel {
             System.err.println(ex.getMessage());
         }
 
+        transactionsTable1.getColumnModel().getColumn(0).setMinWidth(0);
+        transactionsTable1.getColumnModel().getColumn(0).setMaxWidth(0);
+        transactionsTable1.getColumnModel().getColumn(0).setWidth(0);
+
         jScrollPane2.setViewportView(transactionsTable1);
 
         jScrollPane2.setBorder(null);
@@ -121,6 +125,7 @@ public class VTransactions extends javax.swing.JPanel {
 
     public VTransactions() {
         initComponents();
+        txtLoading.setVisible(false);
 
         tableLoad();
 
@@ -135,7 +140,8 @@ public class VTransactions extends javax.swing.JPanel {
                     Date date = (Date) transactionsTable1.getValueAt(row, 1);
                     String from = (String) transactionsTable1.getValueAt(row, 2);
                     String to = (String) transactionsTable1.getValueAt(row, 3);
-                    String amount = (String) transactionsTable1.getValueAt(row, 4);
+                    String displayAmount = (String) transactionsTable1.getValueAt(row, 4);
+                    String numberOnly = displayAmount.replaceAll("[^\\d]", "");
                     StatusType statusType = (StatusType) transactionsTable1.getValueAt(row, 5);
                     String type = "";
                     switch (statusType) {
@@ -152,7 +158,7 @@ public class VTransactions extends javax.swing.JPanel {
                     if (window instanceof Frame frame) {
                         VAddNewTransaction dialog;
                         try {
-                            dialog = new VAddNewTransaction(frame, true, id, type, date, from, to, amount);
+                            dialog = new VAddNewTransaction(frame, true, id, type, date, from, to, numberOnly);
                             dialog.setLocationRelativeTo(frame);
 
                             dialog.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -250,6 +256,7 @@ public class VTransactions extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         btnAdd = new components.PanelBorder();
         jLabel2 = new javax.swing.JLabel();
+        txtLoading = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(0, 0, 0));
 
@@ -375,6 +382,10 @@ public class VTransactions extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
+        txtLoading.setForeground(new java.awt.Color(153, 255, 153));
+        txtLoading.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        txtLoading.setText("Loading...");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -390,6 +401,8 @@ public class VTransactions extends javax.swing.JPanel {
                         .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtLoading, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(20, 20, 20))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -408,7 +421,9 @@ public class VTransactions extends javax.swing.JPanel {
                         .addComponent(comboTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 469, Short.MAX_VALUE)
-                .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtLoading, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(20, 20, 20))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -506,8 +521,12 @@ public class VTransactions extends javax.swing.JPanel {
         private String amount;
     }
 
+
     private void btnExportMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExportMouseClicked
         try {
+            btnExport.setEnabled(false);
+            txtLoading.setVisible(true);
+
             List<Object[]> dataList = controller.getTransactionsForExport(comboTime.getSelectedItem().toString());
             List<exportRowTransaction> listItems = new ArrayList<exportRowTransaction>();
 
@@ -551,6 +570,9 @@ public class VTransactions extends javax.swing.JPanel {
 
             validateShow.setVisible(true);
             System.err.println(ex.getMessage());
+        } finally {
+            btnExport.setEnabled(true);
+            txtLoading.setVisible(false);
         }
     }//GEN-LAST:event_btnExportMouseClicked
 
@@ -565,5 +587,6 @@ public class VTransactions extends javax.swing.JPanel {
     private components.PanelBorder panelBorder2;
     private utils.TransactionsTable transactionsTable1;
     private javax.swing.JTextField txtHeading;
+    private javax.swing.JLabel txtLoading;
     // End of variables declaration//GEN-END:variables
 }

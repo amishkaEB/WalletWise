@@ -28,22 +28,14 @@ public class MCard {
         this.values = values;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public MCard() {
     }
 
-    public MCard(Icon icon, String title, String values, String description) {
+    public MCard(Icon icon, String title, String values) {
         this.icon = icon;
         this.title = title;
         this.values = values;
-        this.description = description;
     }
     
     
@@ -51,5 +43,4 @@ public class MCard {
     private Icon icon;
     private String title;
     private String values;
-    private String description;
 }
